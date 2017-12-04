@@ -1,3 +1,5 @@
+""" Python Bot/library that queues tweets to post them later! """
+
 import json
 import os
 import sys
@@ -10,15 +12,15 @@ DAYS = IntEnum(
     start_at=0)
 
 
-def set_schedule(name, days_list, times_list):
+def set_schedule(name, *, days_list=None, times_list=None):
     pass
 
 
-def queue_tweet(schedule_name, message=None, image=None):
+def queue_post(schedule_name, *, message=None, image=None):
     pass
 
 
-def run():
+def process_queue():
     pass
 
 
