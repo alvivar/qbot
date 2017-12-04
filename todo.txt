@@ -1,0 +1,10 @@
+
+        To do
+
+
+    Timer job system
+    Queue text
+    Queue image
+    Delay schedule
+    sqlite database
+    Analyze image folder as source of queuing
