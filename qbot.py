@@ -9,10 +9,10 @@ from enum import IntEnum
 DAYS = IntEnum(
     "DAYS",
     "Monday Tuesday Wednesday Thursday Friday Saturday Sunday",
-    start_at=0)
+    start=0)
 
 
-def set_schedule(name, *, days_list=None, times_list=None):
+def set_schedule(name, *, days=[], hours=[]):
     pass
 
 
