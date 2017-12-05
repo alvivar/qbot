@@ -6,14 +6,15 @@ import sys
 import time
 from enum import IntEnum
 
-DAYS = IntEnum(
-    "DAYS",
-    "Monday Tuesday Wednesday Thursday Friday Saturday Sunday",
-    start=0)
+# Database SQLite + SQLAlchemy
+import qdb
+ENGINE = qdb.init_database()
+SESSION = qdb.sessionmaker(bind=ENGINE)
+DB = SESSION()
 
 
 def set_schedule(name, *, days=[], hours=[]):
-    pass
+    qdb.update_schedule(DB, name, days, hours)
 
 
 def queue_post(schedule_name, *, message=None, image=None):
