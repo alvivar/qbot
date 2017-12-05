@@ -3,28 +3,29 @@
 import os
 import sys
 
-from sqlalchemy import Column, ForeignKey, Integer, String, create_engine, Boolean
+from sqlalchemy import (Boolean, Column, ForeignKey, Integer, String,
+                        create_engine)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
 Base = declarative_base()
 
 
-class Schedule():
+class Schedule(Base):
     __tablename__ = "schedule"
     id = Column(Integer, primary_key=True)
     times = relationship("Time")
     name = Column(String)
-    monday = Column(Boolean)
-    tuesday = Column(Boolean)
-    wednesday = Column(Boolean)
-    thursday = Column(Boolean)
-    friday = Column(Boolean)
-    saturday = Column(Boolean)
-    sunday = Column(Boolean)
+    monday = Column(Boolean, default=False)
+    tuesday = Column(Boolean, default=False)
+    wednesday = Column(Boolean, default=False)
+    thursday = Column(Boolean, default=False)
+    friday = Column(Boolean, default=False)
+    saturday = Column(Boolean, default=False)
+    sunday = Column(Boolean, default=False)
 
 
-class Time():
+class Time(Base):
     __tablename__ = "time"
     id = Column(Integer, primary_key=True)
     schedule_id = Column(Integer, ForeignKey("schedule.id"))
@@ -32,7 +33,7 @@ class Time():
     minute = Column(Integer)
 
 
-class Post():
+class Post(Base):
     __tablename__ = "post"
     id = Column(Integer, primary_key=True)
     schedule_id = Column(Integer, ForeignKey("schedule.id"))
@@ -50,23 +51,39 @@ def init_database():
     return engine
 
 
-# def update_team(session, auth_response):
-#     """ Create or update a team with his info and auth tokes. """
+def update_schedule(db, name, days, hours):
+    """ Create or update a team with his info and auth tokes. """
 
-#     # Get
-#     team = session.query(Team).filter(
-#         Team.SlackId == auth_response["team_id"]).first()
+    # Get
+    schedule = db.query(Schedule).filter(Schedule.name == name).first()
 
-#     # Create
-#     if team is None:
-#         team = Team()
-#         team.SlackId = auth_response["team_id"]
+    # Or create
+    if schedule is None:
+        schedule = Schedule()
+        schedule.name = name
 
-#     team.AccessToken = auth_response['access_token']
-#     team.BotAccessToken = auth_response['bot']['bot_access_token']
+    # Days of the week
+    schedule.monday = True if 0 in days else False
+    schedule.tuesday = True if 1 in days else False
+    schedule.wednesday = True if 2 in days else False
+    schedule.thursday = True if 3 in days else False
+    schedule.friday = True if 4 in days else False
+    schedule.saturday = True if 5 in days else False
+    schedule.sunday = True if 6 in days else False
 
-#     session.add(team)
-#     session.commit()
+    # New hours
+    db.query(Time).filter(Time.schedule_id == schedule.id).delete()
+    for hm in hours:
+        hour = Time()
+        hour.hour = hm[0]
+        hour.minute = hm[1]
+        hour.schedule_id = schedule.id
+        db.add(hour)
+
+    # Save db
+    db.add(schedule)
+    db.commit()
+
 
 if __name__ == "__main__":
 
@@ -80,11 +97,7 @@ if __name__ == "__main__":
     SESSION = sessionmaker(bind=ENGINE)
     DB = SESSION()
 
-    # TEAM = Team(
-    #     SlackId="SlackIdTest",
-    #     AccessToken="AccessTokenTest",
-    #     BotAccessToken="BotAccessTokenTest",
-    #     Channel="ChannelTest")
-
-    # DB.add(TEAM)
-    # DB.commit()
+    update_schedule(DB, "all days at 7", [0, 1, 2, 3, 4, 5, 6], [(7, 00),
+                                                                 (19, 0)])
+    update_schedule(DB, "weekend every 3 hours", [5, 6],
+                    [(10, 00), (13, 00), (16, 00), (19, 00), (22, 00)])
