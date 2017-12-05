@@ -1,6 +1,6 @@
 """ Python Bot/library that queues tweets to post them later! """
 
-import datetime
+from datetime import datetime
 import json
 import os
 import sys
@@ -80,54 +80,67 @@ def create_post(schedule_name, text, image_url):
     return post
 
 
-def get_schedule_column_day(dayindex):
+def get_schedule_column(day):
     """ Return the column day of the week assuming day index as days of the week
     (0-6). """
-    if dayindex == 0:
+    if day == 0:
         return Schedule.monday
-    elif dayindex == 1:
+    elif day == 1:
         return Schedule.tuesday
-    elif dayindex == 2:
+    elif day == 2:
         return Schedule.wednesday
-    elif dayindex == 3:
+    elif day == 3:
         return Schedule.thursday
-    elif dayindex == 4:
+    elif day == 4:
         return Schedule.friday
-    elif dayindex == 5:
+    elif day == 5:
         return Schedule.saturday
-    elif dayindex == 6:
+    elif day == 6:
         return Schedule.sunday
 
 
 def process_queue():
 
     # What day are we?
-    day = datetime.datetime.today().weekday()
-    hour = datetime.datetime.today().hour
-    minute = datetime.datetime.today().minute
+    today = datetime.today()
+    day = today.weekday()
+    hour = today.hour
+    minute = today.minute
 
-    print(f"Today {get_schedule_column_day(day)}")
+    print(f"Today {get_schedule_column(day)}")
     print(f"Hour {hour}")
-    print(f"Minute {hour}")
+    print(f"Minute {minute}")
 
     # Schedules for today below
     hours = DB.query(Time).join(Schedule).filter(
-        get_schedule_column_day(day)).filter(
-            and_(Time.hour <= 10, Time.minute <= minute))
+        get_schedule_column(day)).filter(
+            and_(Time.hour <= hour, Time.minute <= minute))
 
-    for h in hours:
+    for hour in hours:
 
-        print(h.hour)
+        print(f"Hour {hour.hour}.{hour.minute} used {hour.used}")
 
         # If the last published post older that the current hour?
+        if hour.used is None or (hour.used < datetime.today()):
 
-        # Get the first post unpublished post of the schedule in the hour
+            # Get the first post unpublished post of the schedule in the hour
+            post = DB.query(Post).filter(
+                and_(Post.schedule_id == hour.schedule_id,
+                     not Post.published)).first()
 
-        # Tweet it!
+            # Tweet it!
+            if post:
 
-        # Mark the post as published
+                print(f"Tweet: {post.text}")
 
-        # Register the hour used time
+                # Mark the post as published, and register the hour used time
+
+                hour.used = datetime.now()
+                post.published = True
+
+                DB.add(hour)
+                DB.add(post)
+                DB.commit()
 
 
 if __name__ == "__main__":
