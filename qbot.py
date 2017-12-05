@@ -1,15 +1,16 @@
 """ Python Bot/library that queues tweets to post them later! """
 
+import datetime
 import json
 import os
 import sys
 import time
 
 # Database SQLAlchemy + SQLite
-import qdb
+from qdb import Post, Schedule, Time, and_, init_database, sessionmaker
 
-ENGINE = qdb.init_database()
-SESSION = qdb.sessionmaker(bind=ENGINE)
+ENGINE = init_database()
+SESSION = sessionmaker(bind=ENGINE)
 DB = SESSION()
 
 
@@ -19,11 +20,11 @@ def update_schedule(name, days, hours):
     hours and minutes. """
 
     # Get
-    schedule = DB.query(qdb.Schedule).filter(qdb.Schedule.name == name).first()
+    schedule = DB.query(Schedule).filter(Schedule.name == name).first()
 
     # Or create
     if schedule is None:
-        schedule = qdb.Schedule()
+        schedule = Schedule()
         schedule.name = name
         DB.add(schedule)
         DB.flush()
@@ -38,9 +39,9 @@ def update_schedule(name, days, hours):
     schedule.sunday = True if 6 in days else False
 
     # New hours
-    DB.query(qdb.Time).filter(qdb.Time.schedule_id == schedule.id).delete()
+    DB.query(Time).filter(Time.schedule_id == schedule.id).delete()
     for h_m in hours:
-        hour = qdb.Time()
+        hour = Time()
         hour.hour = h_m[0]
         hour.minute = h_m[1]
         hour.schedule_id = schedule.id
@@ -56,19 +57,19 @@ def create_post(schedule_name, text, image_url):
     """ Create a post, return it. If the schedule doesn't exist, create it. """
 
     # Get
-    schedule = DB.query(
-        qdb.Schedule).filter(qdb.Schedule.name == schedule_name).first()
+    schedule = DB.query(Schedule).filter(
+        Schedule.name == schedule_name).first()
 
     # Or create
     if schedule is None:
-        schedule = qdb.Schedule()
+        schedule = Schedule()
         schedule.name = schedule_name
 
         DB.add(schedule)
         DB.flush()
 
     # New post
-    post = qdb.Post()
+    post = Post()
     post.text = text
     post.image_url = image_url
     post.schedule_id = schedule.id
@@ -79,8 +80,54 @@ def create_post(schedule_name, text, image_url):
     return post
 
 
+def get_schedule_column_day(dayindex):
+    """ Return the column day of the week assuming day index as days of the week
+    (0-6). """
+    if dayindex == 0:
+        return Schedule.monday
+    elif dayindex == 1:
+        return Schedule.tuesday
+    elif dayindex == 2:
+        return Schedule.wednesday
+    elif dayindex == 3:
+        return Schedule.thursday
+    elif dayindex == 4:
+        return Schedule.friday
+    elif dayindex == 5:
+        return Schedule.saturday
+    elif dayindex == 6:
+        return Schedule.sunday
+
+
 def process_queue():
-    pass
+
+    # What day are we?
+    day = datetime.datetime.today().weekday()
+    hour = datetime.datetime.today().hour
+    minute = datetime.datetime.today().minute
+
+    print(f"Today {get_schedule_column_day(day)}")
+    print(f"Hour {hour}")
+    print(f"Minute {hour}")
+
+    # Schedules for today below
+    hours = DB.query(Time).join(Schedule).filter(
+        get_schedule_column_day(day)).filter(
+            and_(Time.hour <= 10, Time.minute <= minute))
+
+    for h in hours:
+
+        print(h.hour)
+
+        # If the last published post older that the current hour?
+
+        # Get the first post unpublished post of the schedule in the hour
+
+        # Tweet it!
+
+        # Mark the post as published
+
+        # Register the hour used time
 
 
 if __name__ == "__main__":
