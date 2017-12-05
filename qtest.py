@@ -23,3 +23,5 @@ if __name__ == "__main__":
     qbot.create_post(
         "wthell", "is this even real?",
         r"C:\Users\matnesis\Documents\Overwatch\ScreenShots\Overwatch\lol.gif")
+
+    qbot.process_queue()
