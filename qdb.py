@@ -1,10 +1,11 @@
 """ Handles all qbot data using SQLAlchemy and sqlite. """
 
+import datetime
 import os
 import sys
 
-from sqlalchemy import (Boolean, Column, ForeignKey, Integer, String,
-                        create_engine)
+from sqlalchemy import (Boolean, Column, DateTime, ForeignKey, Integer, String,
+                        and_, create_engine)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
@@ -33,6 +34,7 @@ class Time(BASE):
     schedule_id = Column(Integer, ForeignKey("schedule.id"))
     hour = Column(Integer)
     minute = Column(Integer)
+    used = Column(DateTime)
 
 
 class Post(BASE):
