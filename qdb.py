@@ -1,4 +1,4 @@
-""" Handles all qbot data. """
+""" Handles all qbot data using SQLAlchemy and sqlite. """
 
 import os
 import sys
@@ -52,7 +52,9 @@ def init_database():
 
 
 def update_schedule(db, name, days, hours):
-    """ Create or update a team with his info and auth tokes. """
+    """ Create or update a schedule, assuming days as a list of numbers
+    enumerating the days of the week (0-6) and hours a list of tuples of hours
+    and minutes. """
 
     # Get
     schedule = db.query(Schedule).filter(Schedule.name == name).first()
@@ -61,6 +63,8 @@ def update_schedule(db, name, days, hours):
     if schedule is None:
         schedule = Schedule()
         schedule.name = name
+        db.add(schedule)
+        db.flush()
 
     # Days of the week
     schedule.monday = True if 0 in days else False
@@ -85,6 +89,30 @@ def update_schedule(db, name, days, hours):
     db.commit()
 
 
+def create_post(db, schedule_name, text, image_url):
+
+    # Get
+    schedule = db.query(Schedule).filter(
+        Schedule.name == schedule_name).first()
+
+    # Or create
+    if schedule is None:
+        schedule = Schedule()
+        schedule.name = schedule_name
+
+        db.add(schedule)
+        db.flush()
+
+    # New post
+    post = Post()
+    post.text = text
+    post.image_url = image_url
+    post.schedule_id = schedule.id
+
+    db.add(post)
+    db.commit()
+
+
 if __name__ == "__main__":
 
     # Frozen / not frozen, cxfreeze compatibility
@@ -92,6 +120,8 @@ if __name__ == "__main__":
         os.path.dirname(
             sys.executable if getattr(sys, 'frozen', False) else __file__))
     os.chdir(DIR)
+
+    # Test
 
     ENGINE = init_database()
     SESSION = sessionmaker(bind=ENGINE)
@@ -101,3 +131,6 @@ if __name__ == "__main__":
                                                                  (19, 0)])
     update_schedule(DB, "weekend every 3 hours", [5, 6],
                     [(10, 00), (13, 00), (16, 00), (19, 00), (22, 00)])
+
+    create_post(DB, "wthell", "is this even real?",
+                r"C:\Users\matnesis\Documents\Overwatch\ScreenShots\Overwatch")
