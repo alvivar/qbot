@@ -15,13 +15,17 @@ if __name__ == "__main__":
 
     # Test
 
-    qbot.update_schedule("all days at 7", [0, 1, 2, 3, 4, 5, 6], [(7, 00),
-                                                                  (19, 0)])
-    qbot.update_schedule("weekend every 3 hours", [5, 6],
-                         [(10, 00), (13, 00), (16, 00), (19, 00), (22, 00)])
+    # qbot.update_schedule("week", [0, 1, 2, 3, 4, 5, 6], [(7, 00), (19, 0)])
+    # qbot.update_schedule("weekend", [5, 6], [(10, 00), (13, 00), (16, 00),
+    #                                          (19, 00), (22, 00)])
 
-    qbot.create_post(
-        "wthell", "is this even real?",
-        r"C:\Users\matnesis\Documents\Overwatch\ScreenShots\Overwatch\lol.gif")
+    # qbot.create_post("week", "hello deja el show",
+    #                  r"https://dummyimage.com/400")
+
+    # qbot.create_post("week", "podriamos querernos diferente",
+    #                  r"https://dummyimage.com/400")
+
+    # qbot.create_post("wthell", "is this even real?",
+    #                  r"https://dummyimage.com/400")
 
     qbot.process_queue()
