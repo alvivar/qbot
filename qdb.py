@@ -78,7 +78,7 @@ def init_database():
 
 if __name__ == "__main__":
 
-    # Connection
+    # Connection test
     ENGINE = init_database()
     SESSION = sessionmaker(bind=ENGINE)
     DB = SESSION()
