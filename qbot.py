@@ -101,15 +101,15 @@ def get_schedule_column(day):
 
 def process_queue():
 
+    started = time.time()
+
     # What day are we?
     today = datetime.today()
     day = today.weekday()
     hour = today.hour
     minute = today.minute
 
-    print(f"Today {get_schedule_column(day)}")
-    print(f"Hour {hour}")
-    print(f"Minute {minute}")
+    print(f"Queue processing started\n{today.date()} {hour}:{minute:02}\n")
 
     # Schedules for today below
     hours = DB.query(Time).join(Schedule).filter(
@@ -118,10 +118,13 @@ def process_queue():
 
     for hour in hours:
 
-        print(f"Hour {hour.hour}.{hour.minute} used {hour.used}")
+        schedule = DB.query(Schedule).filter(
+            Schedule.id == hour.schedule_id).first()
 
-        # If the last published post older that the current hour?
-        if hour.used is None or (hour.used < datetime.today()):
+        print(f"Schedule '{schedule.name}' at {hour.hour}:{hour.minute:02}")
+
+        # If the last published hour older that the current hour?
+        if hour.used is None or hour.used.date() < today.date():
 
             # Get the first post unpublished post of the schedule in the hour
             post = DB.query(Post).filter(
@@ -134,7 +137,6 @@ def process_queue():
                 print(f"Tweet: {post.text}")
 
                 # Mark the post as published, and register the hour used time
-
                 hour.used = datetime.now()
                 post.published = True
 
@@ -142,11 +144,16 @@ def process_queue():
                 DB.add(post)
                 DB.commit()
 
+            else:
+                print("The queue is empty!\n")
+
+        else:
+            print(f"Already done at {hour.used}\n")
+
+    print(f"All done! ({round(time.time()-started)}s)")
+
 
 if __name__ == "__main__":
-
-    DELTA = time.time()
-    print("QBot\n")
 
     # Frozen / not frozen, cxfreeze compatibility
     DIR = os.path.normpath(
