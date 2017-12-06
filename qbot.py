@@ -83,7 +83,7 @@ def queue_post(schedule_name, text, image_url):
 
 
 def get_schedule_column(day):
-    """ Return the column day of the week assuming day index as days of the week
+    """ Return the column day of the week assuming day as days of the week index
     (0-6). """
     if day == 0:
         return Schedule.monday
@@ -102,8 +102,7 @@ def get_schedule_column(day):
 
 
 def process_queue():
-
-    started = time.time()
+    """ Tweet queued post based on the schedules. One at a time. """
 
     # What day are we?
     today = datetime.today()
@@ -111,7 +110,9 @@ def process_queue():
     hour = today.hour
     minute = today.minute
 
-    print(f"Queue processing started\n{today.date()} {hour}:{minute:02}\n")
+    strday = str(get_schedule_column(day)).replace("Schedule.", "").title()
+    print(f"Queue processing started\n"
+          f"{strday} {today.date()} {hour}:{minute:02}\n")
 
     # Get all the schedules for today
     todaysched = DB.query(Schedule).filter(get_schedule_column(day)).all()
@@ -137,7 +138,7 @@ def process_queue():
             # Tweet it!
             if post:
 
-                print(f"Tweet: {post.text}\n")
+                print(f"Tweet: {post.text} {post.image_url}\n")
 
                 # Mark the post as published, and register the hour used time
                 hour.used = datetime.now()
@@ -153,10 +154,10 @@ def process_queue():
         else:
             print(f"No pending hours!\n")
 
-    print(f"All done! ({round(time.time()-started)}s)")
-
 
 if __name__ == "__main__":
+
+    DELTA = time.time()
 
     # Frozen / not frozen, cxfreeze compatibility
     DIR = os.path.normpath(
@@ -185,3 +186,9 @@ if __name__ == "__main__":
               f"Write them in {TOKENS_FILE} and try again.")
         input("OK?")
         sys.exit(0)
+
+    # Do it
+
+    print("QBot v0.1\n")
+    process_queue()
+    print(f"All done! ({round(time.time()-DELTA)}s)")
