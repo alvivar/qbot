@@ -19,13 +19,13 @@ if __name__ == "__main__":
     # qbot.update_schedule("weekend", [5, 6], [(10, 00), (13, 00), (16, 00),
     #                                          (19, 00), (22, 00)])
 
-    # qbot.create_post("week", "hello deja el show",
-    #                  r"https://dummyimage.com/400")
+    # qbot.queue_post("week", "hello deja el show",
+    #                 r"https://dummyimage.com/400")
 
-    # qbot.create_post("week", "podriamos querernos diferente",
-    #                  r"https://dummyimage.com/400")
+    # qbot.queue_post("week", "podriamos querernos diferente",
+    #                 r"https://dummyimage.com/400")
 
-    # qbot.create_post("wthell", "is this even real?",
-    #                  r"https://dummyimage.com/400")
+    # qbot.queue_post("wthell", "is this even real?",
+    #                 r"https://dummyimage.com/400")
 
     qbot.process_queue()
