@@ -1,14 +1,16 @@
 """ Python Bot/library that queues tweets to post them later! """
 
-from datetime import datetime
 import json
 import os
 import sys
 import time
+from datetime import datetime
+
+from sqlalchemy import and_
+
+from qdb import Post, Schedule, Time, init_database, sessionmaker
 
 # Database SQLAlchemy + SQLite
-from qdb import Post, Schedule, Time, and_, init_database, sessionmaker
-
 ENGINE = init_database()
 SESSION = sessionmaker(bind=ENGINE)
 DB = SESSION()
@@ -177,3 +179,9 @@ if __name__ == "__main__":
         }
         with open(TOKENS_FILE, "w") as f:
             json.dump(TOKENS, f)
+
+    if not TOKENS['consumer_key']:
+        print(f"I need your Twitter API tokens!\n"
+              f"Write them in {TOKENS_FILE} and try again.")
+        input("OK?")
+        sys.exit(0)
