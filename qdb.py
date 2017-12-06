@@ -39,7 +39,7 @@ class Time(BASE):
     schedule_id = Column(Integer, ForeignKey("schedule.id"))
     hour = Column(Integer)
     minute = Column(Integer)
-    used = Column(DateTime)
+    used = Column(DateTime, default=datetime.datetime(1984, 9, 11))
     created = Column(DateTime, default=datetime.datetime.now)
 
 
@@ -53,6 +53,10 @@ class Post(BASE):
     image_url = Column(String)
     published = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.datetime.now)
+    updated = Column(
+        DateTime,
+        onupdate=datetime.datetime.now,
+        default=datetime.datetime.now)
 
 
 def init_database():
