@@ -53,7 +53,7 @@ def update_schedule(name, days, hours):
     return schedule
 
 
-def create_post(schedule_name, text, image_url):
+def queue_post(schedule_name, text, image_url):
     """ Create a post, return it. If the schedule doesn't exist, create it. """
 
     # Get
@@ -111,30 +111,31 @@ def process_queue():
 
     print(f"Queue processing started\n{today.date()} {hour}:{minute:02}\n")
 
-    # Schedules for today below
-    hours = DB.query(Time).join(Schedule).filter(
-        get_schedule_column(day)).filter(
-            and_(Time.hour <= hour, Time.minute <= minute))
+    # Get all the schedules for today
+    todaysched = DB.query(Schedule).filter(get_schedule_column(day)).all()
 
-    for hour in hours:
+    # Try to sed
+    for tsc in todaysched:
 
-        schedule = DB.query(Schedule).filter(
-            Schedule.id == hour.schedule_id).first()
+        hour = DB.query(Time).filter(
+            and_(Time.schedule_id == tsc.id, Time.used < today.date(),
+                 Time.hour <= hour, Time.minute <= minute)).first()
 
-        print(f"Schedule '{schedule.name}' at {hour.hour}:{hour.minute:02}")
+        print(f"Schedule '{tsc.name}'")
 
-        # If the last published hour older that the current hour?
-        if hour.used is None or hour.used.date() < today.date():
+        if hour:
 
-            # Get the first post unpublished post of the schedule in the hour
+            print(f"At {hour.hour}:{hour.minute:02}")
+
+            # Get the first unpublished post of the schedule in the hour
             post = DB.query(Post).filter(
                 and_(Post.schedule_id == hour.schedule_id,
-                     not Post.published)).first()
+                     Post.published == 0)).first()
 
             # Tweet it!
             if post:
 
-                print(f"Tweet: {post.text}")
+                print(f"Tweet: {post.text}\n")
 
                 # Mark the post as published, and register the hour used time
                 hour.used = datetime.now()
@@ -148,7 +149,7 @@ def process_queue():
                 print("The queue is empty!\n")
 
         else:
-            print(f"Already done at {hour.used}\n")
+            print(f"No pending hours!\n")
 
     print(f"All done! ({round(time.time()-started)}s)")
 
