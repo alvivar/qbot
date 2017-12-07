@@ -83,7 +83,7 @@ def queue_post(schedule_name, text, image_url):
 
 
 def get_schedule_column(day):
-    """ Return the column day of the week assuming day as days of the week index
+    """ Return the Schedule.day of the week assuming 'day' as an index from
     (0-6). """
     if day == 0:
         return Schedule.monday
