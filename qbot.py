@@ -6,6 +6,7 @@ import sys
 import time
 from datetime import datetime
 
+import tweepy
 from sqlalchemy import and_
 
 from qdb import Post, Schedule, Time, init_database, sessionmaker
@@ -19,7 +20,7 @@ DB = SESSION()
 def update_schedule(name, days, hours):
     """ Create or update and return a schedule, assuming days as a list of
     numbers enumerating the days of the week (0-6) and hours a list of tuples of
-    hours and minutes. """
+    hours and minutes [(h m), ...]. """
 
     # Get
     schedule = DB.query(Schedule).filter(Schedule.name == name).first()
@@ -101,7 +102,7 @@ def get_schedule_column(day):
         return Schedule.sunday
 
 
-def process_queue():
+def process_queue(tokens):
     """ Tweet queued post based on the schedules. One at a time. """
 
     # What day are we?
@@ -137,11 +138,33 @@ def process_queue():
             # Tweet it!
             if post:
 
+                # Twitter auth and tokens validation
+
+                auth = tweepy.OAuthHandler(tokens[tsc.name]['consumer_key'],
+                                           tokens[tsc.name]['consumer_secret'])
+                auth.set_access_token(tokens[tsc.name]['oauth_token'],
+                                      tokens[tsc.name]['oauth_secret'])
+
+                if not tokens[tsc.name]['consumer_key']:
+                    print(f"I need your Twitter API tokens!\n"
+                          f"Write them in and try again.")
+                    input("OK?")
+                    sys.exit(0)
+
+                # Tweet
+
+                api = tweepy.API(
+                    auth,
+                    wait_on_rate_limit=True,
+                    wait_on_rate_limit_notify=True)
+
+                api.update_status(post.text)
                 print(f"Tweet: {post.text} {post.image_url}\n")
 
                 # Mark the post as published, and register the hour used time
-                hour.used = datetime.now()
+
                 post.published = True
+                hour.used = datetime.now()
 
                 DB.add(hour)
                 DB.add(post)
@@ -168,26 +191,40 @@ if __name__ == "__main__":
     TOKENS_FILE = "tokens.json"
 
     # Twitter tokens are mandatory
+
     try:
         TOKENS = json.load(open(TOKENS_FILE, 'r'))
     except (IOError, ValueError):
+
         TOKENS = {
-            'consumer_key': "",
-            'consumer_secret': "",
-            'oauth_token': "",
-            'oauth_secret': ""
+            'default': {
+                'consumer_key': "",
+                'consumer_secret': "",
+                'oauth_token': "",
+                'oauth_secret': ""
+            }
         }
+
         with open(TOKENS_FILE, "w") as f:
             json.dump(TOKENS, f)
 
-    if not TOKENS['consumer_key']:
-        print(f"I need your Twitter API tokens!\n"
-              f"Write them in {TOKENS_FILE} and try again.")
-        input("OK?")
-        sys.exit(0)
+    # Auto add to the token file an entry for each schedule, each one should
+    # have his own twitter account
+    SCHEDS = DB.query(Schedule).all()
+    for sc in SCHEDS:
+        TOKENS[sc.name] = TOKENS.get(
+            sc.name, {
+                'consumer_key': "",
+                'consumer_secret': "",
+                'oauth_token': "",
+                'oauth_secret': ""
+            })
+
+    with open(TOKENS_FILE, "w") as f:
+        json.dump(TOKENS, f)
 
     # Do it
 
     print("QBot v0.1\n")
-    process_queue()
+    process_queue(TOKENS)
     print(f"All done! ({round(time.time()-DELTA)}s)")
