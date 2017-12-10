@@ -188,9 +188,10 @@ if __name__ == "__main__":
     os.chdir(DIR)
 
     # Files
+
     TOKENS_FILE = "tokens.json"
 
-    # Twitter tokens are mandatory
+    # Twitter tokens are needed, one set by schedule
 
     try:
         TOKENS = json.load(open(TOKENS_FILE, 'r'))
@@ -210,6 +211,7 @@ if __name__ == "__main__":
 
     # Auto add to the token file an entry for each schedule, each one should
     # have his own twitter account
+
     SCHEDS = DB.query(Schedule).all()
     for sc in SCHEDS:
         TOKENS[sc.name] = TOKENS.get(
