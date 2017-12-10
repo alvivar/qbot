@@ -106,23 +106,22 @@ def process_queue():
 
     # What day are we?
     today = datetime.today()
-    day = today.weekday()
-    hour = today.hour
-    minute = today.minute
 
-    strday = str(get_schedule_column(day)).replace("Schedule.", "").title()
+    strday = str(get_schedule_column(today.weekday())).replace("Schedule.", "")
     print(f"Queue processing started\n"
-          f"{strday} {today.date()} {hour}:{minute:02}\n")
+          f"{strday.title()} {today.date()} {today.hour}:{today.minute:02}\n")
 
     # Get all the schedules for today
-    todaysched = DB.query(Schedule).filter(get_schedule_column(day)).all()
+    todaysched = DB.query(Schedule).filter(
+        get_schedule_column(today.weekday())).all()
 
     # Try to sed
     for tsc in todaysched:
 
         hour = DB.query(Time).filter(
             and_(Time.schedule_id == tsc.id, Time.used < today.date(),
-                 Time.hour <= hour, Time.minute <= minute)).first()
+                 Time.hour <= today.hour,
+                 Time.minute <= today.minute)).first()
 
         print(f"Schedule '{tsc.name}'")
 
