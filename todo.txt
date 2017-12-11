@@ -3,11 +3,17 @@
 
 
     Console app input rules
+    Process queue option
+    Watch list to analyze before queue processing
+    Add qbot.json messages from other apps/folders to the watch list to update data
+    Auto queue image folder (using qbot.json message data, image name as text, image as image)
+
 
     Change queue order somehow
     Analyze image folder as source of queuing
 
 
+    x File format that works as a file link between apps using QBot
     x Queue text and images
     x Validate tokens
     x Timer job system
