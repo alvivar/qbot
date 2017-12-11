@@ -1,6 +1,6 @@
 {
     "schedule": {
-        "name": "everyhourexample",
+        "name": "example",
         "days": [
             "monday",
             "tuesday",
@@ -8,7 +8,7 @@
             "thursday",
             "friday",
             "saturday",
-            "monday"
+            "sunday"
         ],
         "hours": [
             "10:00",
@@ -32,9 +32,9 @@
             "oauth_secret": ""
         }
     },
-    "queue": [
+    "messages": [
         {
-            "text": "message #example",
+            "text": "message #tag",
             "image": "c:/somewhere/image.gif"
         }
     ]
