@@ -56,7 +56,7 @@ def update_schedule(name, days, hours):
     return schedule
 
 
-def queue_post(schedule_name, text, image_url):
+def queue_post(schedule_name, text, image_url=None):
     """ Create a post, return it. If the schedule doesn't exist, create it. """
 
     # Get
@@ -135,7 +135,6 @@ def process_queue(tokens):
                 and_(Post.schedule_id == hour.schedule_id,
                      Post.published == 0)).first()
 
-            # Tweet it!
             if post:
 
                 # Twitter auth and tokens validation
@@ -146,29 +145,36 @@ def process_queue(tokens):
                                       tokens[tsc.name]['oauth_secret'])
 
                 if not tokens[tsc.name]['consumer_key']:
-                    print(f"I need your Twitter API tokens!\n"
-                          f"Write them in and try again.")
-                    input("OK?")
-                    sys.exit(0)
+                    print(
+                        f"The schedule '{tsc.name}' need the Twitter account tokens.\n"
+                        f"Write them in the 'tokens.json' and try again.\n")
 
                 # Tweet
 
-                api = tweepy.API(
-                    auth,
-                    wait_on_rate_limit=True,
-                    wait_on_rate_limit_notify=True)
+                else:
 
-                api.update_status(post.text)
-                print(f"Tweet: {post.text} {post.image_url}\n")
+                    api = tweepy.API(
+                        auth,
+                        wait_on_rate_limit=True,
+                        wait_on_rate_limit_notify=True)
 
-                # Mark the post as published, and register the hour used time
+                    if post.image_url:
+                        api.update_with_media(post.image_url, post.text)
+                    else:
+                        api.update_status(post.text)
 
-                post.published = True
-                hour.used = datetime.now()
+                    print(
+                        f"Tweeted: {post.text} {post.image_url if not None else ''}\n"
+                    )
 
-                DB.add(hour)
-                DB.add(post)
-                DB.commit()
+                    # Mark the post as published, and register the hour used time
+
+                    post.published = True
+                    hour.used = datetime.now()
+
+                    DB.add(hour)
+                    DB.add(post)
+                    DB.commit()
 
             else:
                 print("The queue is empty!\n")
@@ -209,7 +215,7 @@ if __name__ == "__main__":
         with open(TOKENS_FILE, "w") as f:
             json.dump(TOKENS, f)
 
-    # Auto add to the token file an entry for each schedule, each one should
+    # Auto add to the token file an entry for each schedule, each one need to
     # have his own twitter account
 
     SCHEDS = DB.query(Schedule).all()
