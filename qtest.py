@@ -15,17 +15,19 @@ if __name__ == "__main__":
 
     # Test
 
-    qbot.update_schedule("week", [0, 1, 2, 3, 4, 5, 6], [(7, 00), (19, 0)])
+    qbot.update_schedule("week", [0, 1, 2, 3, 4, 5, 6], [(7, 00), (10, 00),
+                                                         (13, 00)])
     qbot.update_schedule("weekend", [5, 6], [(10, 00), (13, 00), (16, 00),
                                              (19, 00), (22, 00)])
 
-    qbot.queue_post("week", "hello deja el show",
-                    r"https://dummyimage.com/400")
+    qbot.queue_post("week", "this tweet is a text test (1) #ignore")
 
-    qbot.queue_post("week", "podriamos querernos diferente",
-                    r"https://dummyimage.com/400")
+    qbot.queue_post("week", "this tweet is an image test (1) #ignore",
+                    r"C:\Users\matnesis\Downloads\400.png")
 
-    qbot.queue_post("wthell", "is this even real?",
-                    r"https://dummyimage.com/400")
+    qbot.queue_post("week", "this tweet is a text test (2) #ignore")
+
+    qbot.queue_post("week", "this tweet is an image test (2) #ignore",
+                    r"C:\Users\matnesis\Downloads\444.png")
 
     # qbot.process_queue()
