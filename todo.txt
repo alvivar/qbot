@@ -2,9 +2,14 @@
         To do
 
 
-    Timer job system
-    Queue text
-    Queue image
-    Delay schedule
-    sqlite database
+    Console app input rules
+
+    Change queue order somehow
     Analyze image folder as source of queuing
+
+
+    x Queue text and images
+    x Validate tokens
+    x Timer job system
+    x Delay schedule
+    x sqlite database
