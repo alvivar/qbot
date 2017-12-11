@@ -83,6 +83,78 @@ def queue_post(schedule_name, text, image_url=None):
     return post
 
 
+def update_from_message(message):
+    """ The message is a json file that contains all needed information for a
+    working queue. The schedule will be created/updated, the messages will be
+    queued, the tokens will be updated.
+
+    qbot.json
+    {
+        "schedule": {
+            "name": "example",
+            "days": [
+                "saturday",
+                "sunday"
+            ],
+            "hours": [
+                "10:00",
+                "22:00"
+            ],
+            "twitter_tokens": {
+                "consumer_key": "",
+                "consumer_secret": "",
+                "oauth_token": "",
+                "oauth_secret": ""
+            }
+        },
+        "messages": [
+            {
+                "text": "message #tag",
+                "image": "c:/somewhere/image.gif"
+            }
+        ]
+    } """
+
+    try:
+        message = json.load(open(message, 'r'))
+    except (IOError, ValueError):
+        print(f"The QBot message '{message}'\n"
+              "Doesn't exists or isn't a valid json. Check it out.\n")
+        return
+
+    days = [get_int_day(i) for i in message['schedule']['days']]
+    print(days)
+
+    hours = [tuple(x.split(":")) for x in message['schedule']['hours']]
+    print(hours)
+
+    return
+
+    update_schedule(message['schedule']['name'], days, hours)
+
+
+def get_int_day(strday):
+    """ Return the Schedule.day of the week assuming 'day' as an index from
+    (0-6). """
+    strday = strday.lower()
+    if strday == "monday":
+        return 0
+    elif strday == "tuesday":
+        return 1
+    elif strday == "wednesday":
+        return 2
+    elif strday == "thursday":
+        return 3
+    elif strday == "friday":
+        return 4
+    elif strday == "saturday":
+        return 5
+    elif strday == "sunday":
+        return 6
+    else:
+        return -1
+
+
 def get_schedule_column(day):
     """ Return the Schedule.day of the week assuming 'day' as an index from
     (0-6). """
@@ -234,5 +306,6 @@ if __name__ == "__main__":
     # Do it
 
     print("QBot v0.1\n")
-    process_queue(TOKENS)
+    # process_queue(TOKENS)
+    update_from_message("qbot.json")
     print(f"All done! ({round(time.time()-DELTA)}s)")
