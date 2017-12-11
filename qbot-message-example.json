@@ -1,0 +1,42 @@
+{
+    "schedule": {
+        "name": "everyhourexample",
+        "days": [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "monday"
+        ],
+        "hours": [
+            "10:00",
+            "11:00",
+            "12:00",
+            "13:00",
+            "14:00",
+            "15:00",
+            "16:00",
+            "17:00",
+            "18:00",
+            "19:00",
+            "20:00",
+            "21:00",
+            "22:00"
+        ],
+        "twitter_tokens": {
+            "consumer_key": "",
+            "consumer_secret": "",
+            "oauth_token": "",
+            "oauth_secret": ""
+        }
+    },
+    "queue": [
+        {
+            "text": "message #example",
+            "image": "c:/somewhere/image.gif"
+        }
+    ],
+    "done": []
+}
