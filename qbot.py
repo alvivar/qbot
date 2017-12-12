@@ -20,6 +20,47 @@ SESSION = sessionmaker(bind=ENGINE)
 DB = SESSION()
 
 
+def get_int_day(strday):
+    """ Return the Schedule.day of the week assuming 'day' as an index from
+    (0-6). """
+    strday = strday.lower()
+    if strday == "monday":
+        return 0
+    elif strday == "tuesday":
+        return 1
+    elif strday == "wednesday":
+        return 2
+    elif strday == "thursday":
+        return 3
+    elif strday == "friday":
+        return 4
+    elif strday == "saturday":
+        return 5
+    elif strday == "sunday":
+        return 6
+    else:
+        return -1
+
+
+def get_schedule_column(day):
+    """ Return the Schedule.day of the week assuming 'day' as an index from
+    (0-6). """
+    if day == 0:
+        return Schedule.monday
+    elif day == 1:
+        return Schedule.tuesday
+    elif day == 2:
+        return Schedule.wednesday
+    elif day == 3:
+        return Schedule.thursday
+    elif day == 4:
+        return Schedule.friday
+    elif day == 5:
+        return Schedule.saturday
+    elif day == 6:
+        return Schedule.sunday
+
+
 def update_schedule(name, days, hours):
     """ Create or update and return a schedule, assuming days as a list of
     numbers enumerating the days of the week (0-6) and hours a list of tuples of
@@ -86,13 +127,52 @@ def queue_post(schedule_name, text, image_url=None):
     return post
 
 
+def watch_folder(path):
+    """ Create a json file at some folder that is going to be used as config for
+    the bot every time before processing a queue. """
+
+    jsonmessage = {
+        "options": {
+            "refresh_schedule": True
+        },
+        "schedule": {
+            "name":
+            "example",
+            "days": [
+                "monday", "tuesday", "wednesday", "thursday", "friday",
+                "saturday", "sunday"
+            ],
+            "hours":
+            ["10:30", "12:30", "14:30", "16:30", "18:30", "20:30", "22:30"]
+        },
+        "twitter_tokens": {
+            "consumer_key": "find",
+            "consumer_secret": "them",
+            "oauth_token": "on",
+            "oauth_secret": "apps.twitter.com"
+        },
+        "messages": [{
+            "text": "only text message #example"
+        }, {
+            "text": "message with an image #example",
+            "image": "c:/somewhere/image.gif"
+        }]
+    }
+
+    pass
+
+
 def update_from_message(jsonfile):
     """ The message is a json file that contains all needed information for a
     working queue. The schedule will be created/updated, the messages will be
-    queued, the tokens will be updated.
+    queued, the tokens will be updated and the file will be modified to reflect
+    changes.
 
     qbot.json
     {
+        "options": {
+            "refresh_schedule": false
+        },
         "schedule": {
             "name": "example",
             "days": [
@@ -101,14 +181,17 @@ def update_from_message(jsonfile):
             ],
             "hours": [
                 "10:00",
+                "13:00",
+                "16:00",
+                "19:00",
                 "22:00"
-            ],
-            "twitter_tokens": {
-                "consumer_key": "",
-                "consumer_secret": "",
-                "oauth_token": "",
-                "oauth_secret": ""
-            }
+            ]
+        },
+        "twitter_tokens": {
+            "consumer_key": "find",
+            "consumer_secret": "it",
+            "oauth_token": "on",
+            "oauth_secret": "apps.twitter.com"
         },
         "messages": [
             {
@@ -140,7 +223,7 @@ def update_from_message(jsonfile):
     for post in message['messages']:
         queue_post(schedule, post['text'], post['image'])
 
-    # Response
+    # Response is in the same file
 
     message['queued'] = message.get('queued', [])
     message['queued'] += message['messages']
@@ -167,47 +250,6 @@ def update_from_message(jsonfile):
         json.dump(tokens, f)
 
 
-def get_int_day(strday):
-    """ Return the Schedule.day of the week assuming 'day' as an index from
-    (0-6). """
-    strday = strday.lower()
-    if strday == "monday":
-        return 0
-    elif strday == "tuesday":
-        return 1
-    elif strday == "wednesday":
-        return 2
-    elif strday == "thursday":
-        return 3
-    elif strday == "friday":
-        return 4
-    elif strday == "saturday":
-        return 5
-    elif strday == "sunday":
-        return 6
-    else:
-        return -1
-
-
-def get_schedule_column(day):
-    """ Return the Schedule.day of the week assuming 'day' as an index from
-    (0-6). """
-    if day == 0:
-        return Schedule.monday
-    elif day == 1:
-        return Schedule.tuesday
-    elif day == 2:
-        return Schedule.wednesday
-    elif day == 3:
-        return Schedule.thursday
-    elif day == 4:
-        return Schedule.friday
-    elif day == 5:
-        return Schedule.saturday
-    elif day == 6:
-        return Schedule.sunday
-
-
 def process_queue(tokens):
     """ Tweet queued post based on the schedules. One at a time. """
 
@@ -222,7 +264,7 @@ def process_queue(tokens):
     todaysched = DB.query(Schedule).filter(
         get_schedule_column(today.weekday())).all()
 
-    # Try to sed
+    # Look for an hour that fits
     for tsc in todaysched:
 
         hour = DB.query(Time).filter(
@@ -313,9 +355,6 @@ if __name__ == "__main__":
                 'oauth_secret': ""
             }
         }
-
-        with open(TOKENS_FILE, "w") as f:
-            json.dump(TOKENS, f)
 
     # Auto add to the token file an entry for each schedule, each one need to
     # have his own twitter account
