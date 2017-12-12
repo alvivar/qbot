@@ -1,4 +1,7 @@
 {
+    "options": {
+        "refresh_schedule": false
+    },
     "schedule": {
         "name": "example",
         "days": [
@@ -24,13 +27,13 @@
             "20:00",
             "21:00",
             "22:00"
-        ],
-        "twitter_tokens": {
-            "consumer_key": "find",
-            "consumer_secret": "it",
-            "oauth_token": "on",
-            "oauth_secret": "apps.twitter.com"
-        }
+        ]
+    },
+    "twitter_tokens": {
+        "consumer_key": "find",
+        "consumer_secret": "it",
+        "oauth_token": "on",
+        "oauth_secret": "apps.twitter.com"
     },
     "messages": [
         {

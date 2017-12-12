@@ -131,14 +131,16 @@ def update_from_message(jsonfile):
     days = [get_int_day(i) for i in message['schedule']['days']]
     hours = [tuple(x.split(":")) for x in message['schedule']['hours']]
 
-    update_schedule(schedule, days, hours)
+    if message['options']["refresh_schedule"]:
+        update_schedule(schedule, days, hours)
+        message['options']["refresh_schedule"] = False
 
     # Posts
 
     for post in message['messages']:
         queue_post(schedule, post['text'], post['image'])
 
-    # Message response
+    # Response
 
     message['queued'] = message.get('queued', [])
     message['queued'] += message['messages']
@@ -155,14 +157,10 @@ def update_from_message(jsonfile):
         tokens = {}
 
     tokens[schedule] = {
-        'consumer_key':
-        message['schedule']['twitter_tokens']['consumer_key'],
-        'consumer_secret':
-        message['schedule']['twitter_tokens']['consumer_secret'],
-        'oauth_token':
-        message['schedule']['twitter_tokens']['oauth_token'],
-        'oauth_secret':
-        message['schedule']['twitter_tokens']['oauth_secret']
+        'consumer_key': message['twitter_tokens']['consumer_key'],
+        'consumer_secret': message['twitter_tokens']['consumer_secret'],
+        'oauth_token': message['twitter_tokens']['oauth_token'],
+        'oauth_secret': message['twitter_tokens']['oauth_secret']
     }
 
     with open(TOKENS_FILE, "w") as f:
