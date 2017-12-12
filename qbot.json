@@ -1,6 +1,6 @@
 {
     "options": {
-        "refresh_schedule": false
+        "refresh_schedule": true
     },
     "schedule": {
         "name": "example",
@@ -14,30 +14,27 @@
             "sunday"
         ],
         "hours": [
-            "10:00",
-            "11:00",
-            "12:00",
-            "13:00",
-            "14:00",
-            "15:00",
-            "16:00",
-            "17:00",
-            "18:00",
-            "19:00",
-            "20:00",
-            "21:00",
-            "22:00"
+            "10:30",
+            "12:30",
+            "14:30",
+            "16:30",
+            "18:30",
+            "20:30",
+            "22:30"
         ]
     },
     "twitter_tokens": {
         "consumer_key": "find",
-        "consumer_secret": "it",
+        "consumer_secret": "them",
         "oauth_token": "on",
         "oauth_secret": "apps.twitter.com"
     },
     "messages": [
         {
-            "text": "message #tag",
+            "text": "only text message #example"
+        },
+        {
+            "text": "message with an image #example",
             "image": "c:/somewhere/image.gif"
         }
     ]
