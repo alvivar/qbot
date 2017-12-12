@@ -11,6 +11,9 @@ from sqlalchemy import and_
 
 from qdb import Post, Schedule, Time, init_database, sessionmaker
 
+# Constants
+TOKENS_FILE = "tokens.json"
+
 # Database SQLAlchemy + SQLite
 ENGINE = init_database()
 SESSION = sessionmaker(bind=ENGINE)
@@ -122,15 +125,34 @@ def update_from_message(message):
               "Doesn't exists or isn't a valid json. Check it out.\n")
         return
 
+    # Schedule
+
+    name = message['schedule']['name']
     days = [get_int_day(i) for i in message['schedule']['days']]
-    print(days)
-
     hours = [tuple(x.split(":")) for x in message['schedule']['hours']]
-    print(hours)
 
-    return
+    update_schedule(name, days, hours)
 
-    update_schedule(message['schedule']['name'], days, hours)
+    # Tokens
+
+    try:
+        tokens = json.load(open(TOKENS_FILE, 'r'))
+    except (IOError, ValueError):
+        tokens = {}
+
+    tokens[name] = {
+        'consumer_key':
+        message['schedule']['twitter_tokens']['consumer_key'],
+        'consumer_secret':
+        message['schedule']['twitter_tokens']['consumer_secret'],
+        'oauth_token':
+        message['schedule']['twitter_tokens']['oauth_token'],
+        'oauth_secret':
+        message['schedule']['twitter_tokens']['oauth_secret']
+    }
+
+    with open(TOKENS_FILE, "w") as f:
+        json.dump(tokens, f)
 
 
 def get_int_day(strday):
@@ -264,10 +286,6 @@ if __name__ == "__main__":
         os.path.dirname(
             sys.executable if getattr(sys, 'frozen', False) else __file__))
     os.chdir(DIR)
-
-    # Files
-
-    TOKENS_FILE = "tokens.json"
 
     # Twitter tokens are needed, one set by schedule
 
