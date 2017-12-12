@@ -127,11 +127,16 @@ def update_from_message(message):
 
     # Schedule
 
-    name = message['schedule']['name']
+    schedule = message['schedule']['name']
     days = [get_int_day(i) for i in message['schedule']['days']]
     hours = [tuple(x.split(":")) for x in message['schedule']['hours']]
 
-    update_schedule(name, days, hours)
+    update_schedule(schedule, days, hours)
+
+    # Posts
+
+    for post in message['messages']:
+        queue_post(schedule, post['text'], post['image'])
 
     # Tokens
 
@@ -140,7 +145,7 @@ def update_from_message(message):
     except (IOError, ValueError):
         tokens = {}
 
-    tokens[name] = {
+    tokens[schedule] = {
         'consumer_key':
         message['schedule']['twitter_tokens']['consumer_key'],
         'consumer_secret':
