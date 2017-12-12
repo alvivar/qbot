@@ -86,7 +86,7 @@ def queue_post(schedule_name, text, image_url=None):
     return post
 
 
-def update_from_message(message):
+def update_from_message(jsonfile):
     """ The message is a json file that contains all needed information for a
     working queue. The schedule will be created/updated, the messages will be
     queued, the tokens will be updated.
@@ -119,9 +119,9 @@ def update_from_message(message):
     } """
 
     try:
-        message = json.load(open(message, 'r'))
+        message = json.load(open(jsonfile, 'r'))
     except (IOError, ValueError):
-        print(f"The QBot message '{message}'\n"
+        print(f"The QBot message '{jsonfile}'\n"
               "Doesn't exists or isn't a valid json. Check it out.\n")
         return
 
@@ -137,6 +137,15 @@ def update_from_message(message):
 
     for post in message['messages']:
         queue_post(schedule, post['text'], post['image'])
+
+    # Message response
+
+    message['queued'] = message.get('queued', [])
+    message['queued'] += message['messages']
+    message['messages'] = []
+
+    with open(jsonfile, "w") as f:
+        json.dump(message, f)
 
     # Tokens
 
