@@ -2,15 +2,13 @@
         To do
 
 
-    Console app input rules
-    Process queue option
     QBot message update messages
     Watch list to analyze before queue process that creates a message file on the folder
+    Console app input rules
+    Process queue option
+
     QBot message option to auto queue images from folder (image name as text, image as image)
-
-
     Change queue order somehow
-    Analyze image folder as source of queuing
 
 
     2017/12/11
