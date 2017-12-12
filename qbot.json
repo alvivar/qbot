@@ -26,10 +26,10 @@
             "22:00"
         ],
         "twitter_tokens": {
-            "consumer_key": "",
-            "consumer_secret": "",
-            "oauth_token": "",
-            "oauth_secret": ""
+            "consumer_key": "find",
+            "consumer_secret": "it",
+            "oauth_token": "on",
+            "oauth_secret": "apps.twitter.com"
         }
     },
     "messages": [
