@@ -9,7 +9,7 @@ from datetime import datetime
 import tweepy
 from sqlalchemy import and_
 
-from qdb import Post, Schedule, Time, init_database, sessionmaker
+from qdb import Post, Schedule, Time, Watch, init_database, sessionmaker
 
 # Constants
 TOKENS_FILE = "tokens.json"
@@ -159,7 +159,27 @@ def watch_folder(path):
         }]
     }
 
-    pass
+    # File creation
+
+    if not os.path.isdir(path):
+        print(f"The path {path}\n" "Is not valid, check it out.\n")
+        return
+
+    filename = os.path.normpath(os.path.join(path, "qbot.json"))
+
+    with open(filename, "w") as f:
+        json.dump(jsonmessage, f)
+
+    # Add it to the watch
+
+    watch = DB.query(Watch).filter(Watch.path == filename).first()
+    if watch is None:
+
+        watch = Watch()
+        watch.path = filename
+
+        DB.add(watch)
+        DB.commit()
 
 
 def update_from_message(jsonfile):
@@ -168,38 +188,8 @@ def update_from_message(jsonfile):
     queued, the tokens will be updated and the file will be modified to reflect
     changes.
 
-    qbot.json
-    {
-        "options": {
-            "refresh_schedule": false
-        },
-        "schedule": {
-            "name": "example",
-            "days": [
-                "saturday",
-                "sunday"
-            ],
-            "hours": [
-                "10:00",
-                "13:00",
-                "16:00",
-                "19:00",
-                "22:00"
-            ]
-        },
-        "twitter_tokens": {
-            "consumer_key": "find",
-            "consumer_secret": "it",
-            "oauth_token": "on",
-            "oauth_secret": "apps.twitter.com"
-        },
-        "messages": [
-            {
-                "text": "message #tag",
-                "image": "c:/somewhere/image.gif"
-            }
-        ]
-    } """
+    Check out the json inside 'watch_folder(' function as reference.
+    """
 
     try:
         message = json.load(open(jsonfile, 'r'))
@@ -376,5 +366,6 @@ if __name__ == "__main__":
 
     print("QBot v0.1\n")
     # process_queue(TOKENS)
-    update_from_message("qbot.json")
+    # update_from_message("qbot.json")
+    watch_folder(r"D:\Downloads\Fury 2014 720p BRRip [ChattChitto RG]")
     print(f"All done! ({round(time.time()-DELTA)}s)")
