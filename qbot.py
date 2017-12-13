@@ -340,7 +340,9 @@ if __name__ == "__main__":
 
     # Command line args
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description=
+        'Bot that tweets on schedules, using json files as configuration.')
     parser.add_argument(
         "-w",
         "--watch-path",
@@ -355,7 +357,7 @@ if __name__ == "__main__":
         action="store_true")
     args = parser.parse_args()
 
-    if not args.process_queue and not args.watch_path:
+    if not args.watch_path and not args.process_queue:
         parser.print_usage()
         parser.exit()
 
