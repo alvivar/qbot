@@ -1,15 +1,17 @@
 
         To do
 
-
-    QBot message update messages
-    Watch list to analyze before queue process that creates a message file on the folder
+    Watch list analisis before queue process
     Console app input rules
     Process queue option
 
     QBot message option to auto queue images from folder (image name as text, image as image)
     Change queue order somehow
 
+    2017/12/12 06:19 pm
+    x Watch list in the db
+    x Watch list that creates a message file on the folder
+    x QBot message update messages
 
     2017/12/11
     x QBot message update tokens
