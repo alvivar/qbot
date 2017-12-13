@@ -1,7 +1,6 @@
 
         To do
 
-    Watch list analisis before queue process
     Console app input rules
     Process queue option
     Watch folder option
@@ -12,6 +11,7 @@
     Tokens should be inside the database?
 
     2017/12/12 06:19 pm
+    x Watch list analisis before queue process
     x Watch list in the db
     x Watch list that creates a message file on the folder
     x QBot message update messages
