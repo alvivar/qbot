@@ -4,9 +4,12 @@
     Watch list analisis before queue process
     Console app input rules
     Process queue option
+    Watch folder option
+    Info option
 
     QBot message option to auto queue images from folder (image name as text, image as image)
     Change queue order somehow
+    Tokens should be inside the database?
 
     2017/12/12 06:19 pm
     x Watch list in the db
