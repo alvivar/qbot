@@ -2,13 +2,15 @@
         To do
 
     Console app input rules
-    Process queue option
     Watch folder option
-    Info option
+    Process queue option
+    Info option (by default?)
 
+    Tokens should be inside the database?
     QBot message option to auto queue images from folder (image name as text, image as image)
     Change queue order somehow
-    Tokens should be inside the database?
+    Validate duplicated tweet exception
+    Tweets with errors should return to the qbot.json files
 
     2017/12/12 06:19 pm
     x Watch list analisis before queue process
