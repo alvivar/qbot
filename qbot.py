@@ -128,9 +128,9 @@ def queue_post(schedule_name, text, image_url=None):
     return post
 
 
-def watch_folder(path):
-    """ Create a json file at some folder that is going to be used as config for
-    the bot every time before processing a queue. """
+def watch_json(filename):
+    """ Create a json file that is going to be used as config / communication
+    for the bot every time before processing a queue. """
 
     jsonmessage = {
         "options": {
@@ -162,17 +162,20 @@ def watch_folder(path):
 
     # File creation
 
-    if not os.path.isdir(path):
-        print(f"This path {path}\n" "Is not valid, check it out.")
-        return
+    path = os.path.dirname(filename)
+    name = os.path.basename(filename)
 
-    filename = os.path.normpath(os.path.join(path, "qbot.json"))
+    if not os.path.exists(path):
+        os.makedirs(path)
 
-    with open(filename, "w") as f:
-        json.dump(jsonmessage, f)
-        print(f"Added to the watch list: '{path}'")
+    name, _ = os.path.splitext(name)
+    filename = os.path.normpath(os.path.join(path, name + ".json"))
 
     # Add it to the watch list
+
+    with open(filename, "w") as f:
+        json.dump(jsonmessage, f, indent=True)
+        print(f"Added to the watch list: '{filename}'")
 
     watch = DB.query(Watch).filter(Watch.path == filename).first()
     if watch is None:
@@ -187,7 +190,7 @@ def update_from_file(jsonfile):
     schedule will be created/updated, the messages will be queued, the tokens
     will be updated and the file will be modified to reflect changes.
 
-    Check out the json inside 'watch_folder(' function as reference.
+    Check out the json inside 'watch_json(' function as reference.
     """
 
     try:
@@ -221,7 +224,7 @@ def update_from_file(jsonfile):
     message['messages'] = []
 
     with open(jsonfile, "w") as f:
-        json.dump(message, f)
+        json.dump(message, f, indent=True)
 
     # Tokens
 
@@ -238,11 +241,12 @@ def update_from_file(jsonfile):
     }
 
     with open(TOKENS_FILE, "w") as f:
-        json.dump(tokens, f)
+        json.dump(tokens, f, indent=True)
 
 
 def process_queue(tokens):
-    """ Tweet queued post based on the schedules. One at a time. """
+    """ First update all schedules and data from the watch list files, then
+    tweet queued post based on the schedules. One at a time. """
 
     # Update data from the watch list
     watch = DB.query(Watch).all()
@@ -340,26 +344,27 @@ if __name__ == "__main__":
 
     # Command line args
 
-    parser = argparse.ArgumentParser(
+    PARSER = argparse.ArgumentParser(
         description=
-        'Bot that tweets on schedules, using json files as configuration.')
-    parser.add_argument(
+        'Bot that tweets on schedules, using json files as configuration')
+    PARSER.add_argument(
         "-w",
-        "--watch-path",
+        "--watch-json",
         help=
-        "add folder paths to the watch list, create a qbot.json in them for options / communication ",
+        "create and add to the watch list a json file to be used as configuration and data input",
         nargs="+",
         default=[])
-    parser.add_argument(
+    PARSER.add_argument(
         "-p",
         "--process-queue",
-        help="start the queue process",
+        help=
+        "start the queue process, updates config from the files in the watch list, then tweets based on the schedules",
         action="store_true")
-    args = parser.parse_args()
+    args = PARSER.parse_args()
 
-    if not args.watch_path and not args.process_queue:
-        parser.print_usage()
-        parser.exit()
+    if not args.watch_json and not args.process_queue:
+        PARSER.print_usage()
+        PARSER.exit()
 
     DELTA = time.time()
 
@@ -399,11 +404,11 @@ if __name__ == "__main__":
             })
 
     with open(TOKENS_FILE, "w") as f:
-        json.dump(TOKENS, f)
+        json.dump(TOKENS, f, indent=True)
 
     # Do it
 
     # process_queue(TOKENS)
     # update_from_message("qbot.json")
-    # watch_folder(r"D:\Downloads\Fury 2014 720p BRRip [ChattChitto RG]")
+    watch_json(r"D:\Downloads\Test\file")
     print(f"\nAll done! ({round(time.time()-DELTA)}s)")
