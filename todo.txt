@@ -12,6 +12,9 @@
     Validate duplicated tweet exception
     Tweets with errors should return to the qbot.json files
 
+    An option to remain open waiting for times to tweet
+    Tweet more that once per run if it fits
+
     2017/12/12 06:19 pm
     x Watch list analisis before queue process
     x Watch list in the db
