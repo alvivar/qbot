@@ -169,24 +169,22 @@ def watch_folder(path):
 
     with open(filename, "w") as f:
         json.dump(jsonmessage, f)
+        print(f"Added to the watch list: '{path}'\n")
 
-    # Add it to the watch
+    # Add it to the watch list
 
     watch = DB.query(Watch).filter(Watch.path == filename).first()
     if watch is None:
-
         watch = Watch()
         watch.path = filename
-
         DB.add(watch)
         DB.commit()
 
 
-def update_from_message(jsonfile):
-    """ The message is a json file that contains all needed information for a
-    working queue. The schedule will be created/updated, the messages will be
-    queued, the tokens will be updated and the file will be modified to reflect
-    changes.
+def update_from_file(jsonfile):
+    """ The  json file contains all needed information for a working queue. The
+    schedule will be created/updated, the messages will be queued, the tokens
+    will be updated and the file will be modified to reflect changes.
 
     Check out the json inside 'watch_folder(' function as reference.
     """
@@ -211,7 +209,9 @@ def update_from_message(jsonfile):
     # Posts
 
     for post in message['messages']:
-        queue_post(schedule, post['text'], post['image'])
+        text = post['text']
+        image = post['image'] if "image" in post else None
+        queue_post(schedule, text, image)
 
     # Response is in the same file
 
@@ -242,6 +242,11 @@ def update_from_message(jsonfile):
 
 def process_queue(tokens):
     """ Tweet queued post based on the schedules. One at a time. """
+
+    # Update data from the watch list
+    watch = DB.query(Watch).all()
+    for w in watch:
+        update_from_file(w.path)
 
     # What day are we?
     today = datetime.today()
@@ -297,12 +302,18 @@ def process_queue(tokens):
                         wait_on_rate_limit_notify=True)
 
                     if post.image_url:
-                        api.update_with_media(post.image_url, post.text)
+                        try:
+                            api.update_with_media(post.image_url, post.text)
+                        except tweepy.error.TweepError:
+                            print(
+                                f"Error: Image not found on {post.image_url} {post.text}"
+                            )
+
                     else:
                         api.update_status(post.text)
 
                     print(
-                        f"Tweeted: {post.text} {post.image_url if not None else ''}\n"
+                        f"Tweeted: {post.text} {post.image_url if post.image_url is not None else ''}"
                     )
 
                     # Mark the post as published, and register the hour used time
@@ -365,7 +376,7 @@ if __name__ == "__main__":
     # Do it
 
     print("QBot v0.1\n")
-    # process_queue(TOKENS)
+    process_queue(TOKENS)
     # update_from_message("qbot.json")
-    watch_folder(r"D:\Downloads\Fury 2014 720p BRRip [ChattChitto RG]")
-    print(f"All done! ({round(time.time()-DELTA)}s)")
+    # watch_folder(r"D:\Downloads\Fury 2014 720p BRRip [ChattChitto RG]")
+    print(f"\nAll done! ({round(time.time()-DELTA)}s)")
