@@ -162,14 +162,14 @@ def watch_folder(path):
     # File creation
 
     if not os.path.isdir(path):
-        print(f"The path {path}\n" "Is not valid, check it out.\n")
+        print(f"This path {path}\n" "Is not valid, check it out.")
         return
 
     filename = os.path.normpath(os.path.join(path, "qbot.json"))
 
     with open(filename, "w") as f:
         json.dump(jsonmessage, f)
-        print(f"Added to the watch list: '{path}'\n")
+        print(f"Added to the watch list: '{path}'")
 
     # Add it to the watch list
 
@@ -192,8 +192,8 @@ def update_from_file(jsonfile):
     try:
         message = json.load(open(jsonfile, 'r'))
     except (IOError, ValueError):
-        print(f"The QBot message '{jsonfile}'\n"
-              "Doesn't exists or isn't a valid json. Check it out.\n")
+        print(f"The file '{jsonfile}'\n"
+              "Doesn't exists or isn't a valid json. Check it out.")
         return
 
     # Schedule
@@ -290,7 +290,8 @@ def process_queue(tokens):
                 if not tokens[tsc.name]['consumer_key']:
                     print(
                         f"The schedule '{tsc.name}' need the Twitter account tokens.\n"
-                        f"Write them in the 'tokens.json' and try again.\n")
+                        f"Write them in 'qbot.json' and try again.")
+                        continue
 
                 # Tweet
 
@@ -304,17 +305,14 @@ def process_queue(tokens):
                     if post.image_url:
                         try:
                             api.update_with_media(post.image_url, post.text)
+                            print(f"Tweeted: {post.text} {post.image_url}")
                         except tweepy.error.TweepError:
                             print(
-                                f"Error: Image not found on {post.image_url} {post.text}"
+                                f"Image not found, skipping: {post.text} {post.image_url}"
                             )
-
                     else:
                         api.update_status(post.text)
-
-                    print(
-                        f"Tweeted: {post.text} {post.image_url if post.image_url is not None else ''}"
-                    )
+                        print(f"Tweeted: {post.text} ")
 
                     # Mark the post as published, and register the hour used time
 
@@ -326,10 +324,10 @@ def process_queue(tokens):
                     DB.commit()
 
             else:
-                print("The queue is empty!\n")
+                print("The queue is empty!")
 
         else:
-            print(f"No pending hours!\n")
+            print(f"No pending hours!")
 
 
 if __name__ == "__main__":
