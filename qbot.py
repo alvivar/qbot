@@ -1,5 +1,6 @@
 """ Python Bot/library that queues tweets to post them later! """
 
+import argparse
 import json
 import os
 import sys
@@ -291,7 +292,7 @@ def process_queue(tokens):
                     print(
                         f"The schedule '{tsc.name}' need the Twitter account tokens.\n"
                         f"Write them in 'qbot.json' and try again.")
-                        continue
+                    continue
 
                 # Tweet
 
@@ -332,9 +333,36 @@ def process_queue(tokens):
 
 if __name__ == "__main__":
 
+    print("""      ;
+     ["]
+    /[_]\\
+     ] [""")
+
+    # Command line args
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-w",
+        "--watch-path",
+        help=
+        "add folder paths to the watch list, create a qbot.json in them for options / communication ",
+        nargs="+",
+        default=[])
+    parser.add_argument(
+        "-p",
+        "--process-queue",
+        help="start the queue process",
+        action="store_true")
+    args = parser.parse_args()
+
+    if not args.process_queue and not args.watch_path:
+        parser.print_usage()
+        parser.exit()
+
     DELTA = time.time()
 
     # Frozen / not frozen, cxfreeze compatibility
+
     DIR = os.path.normpath(
         os.path.dirname(
             sys.executable if getattr(sys, 'frozen', False) else __file__))
@@ -373,8 +401,7 @@ if __name__ == "__main__":
 
     # Do it
 
-    print("QBot v0.1\n")
-    process_queue(TOKENS)
+    # process_queue(TOKENS)
     # update_from_message("qbot.json")
     # watch_folder(r"D:\Downloads\Fury 2014 720p BRRip [ChattChitto RG]")
     print(f"\nAll done! ({round(time.time()-DELTA)}s)")
