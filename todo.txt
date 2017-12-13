@@ -5,11 +5,13 @@
     Watch folder option
     Process queue option
     Info option (by default?)
+    Prune orphan files
 
+    Validate duplicated tweet exception
+    Validate invalid or expired tokens
     Tokens should be inside the database?
     QBot message option to auto queue images from folder (image name as text, image as image)
     Change queue order somehow
-    Validate duplicated tweet exception
     Tweets with errors should return to the qbot.json files
 
     An option to remain open waiting for times to tweet
