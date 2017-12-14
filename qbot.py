@@ -196,8 +196,7 @@ def update_from_file(jsonfile):
     try:
         message = json.load(open(jsonfile, 'r'))
     except (IOError, ValueError):
-        print(f"The file '{jsonfile}'\n"
-              "Doesn't exists or isn't a valid json. Check it out.")
+        print(f"This file doesn't exists or is not a valid json: '{jsonfile}'")
         return
 
     # Schedule
@@ -249,6 +248,9 @@ def process_queue(tokens):
     tweet queued post based on the schedules. One at a time. """
 
     # Update data from the watch list
+
+    print(f"Updating data from files in the watch list...")
+
     watch = DB.query(Watch).all()
     for w in watch:
         update_from_file(w.path)
@@ -257,8 +259,9 @@ def process_queue(tokens):
     today = datetime.today()
 
     strday = str(get_schedule_column(today.weekday())).replace("Schedule.", "")
-    print(f"Queue processing started\n"
-          f"{strday.title()} {today.date()} {today.hour}:{today.minute:02}\n")
+    print(
+        f"\nQueue processing started "
+        f"({strday.title()} {today.date()} {today.hour}:{today.minute:02})\n")
 
     # Get all the schedules for today
     todaysched = DB.query(Schedule).filter(
@@ -269,8 +272,8 @@ def process_queue(tokens):
 
         hour = DB.query(Time).filter(
             and_(Time.schedule_id == tsc.id, Time.used < today.date(),
-                 Time.hour <= today.hour,
-                 Time.minute <= today.minute)).first()
+                 Time.hour + 1 / Time.minute <=
+                 today.hour + 1 / today.minute)).first()
 
         print(f"Schedule '{tsc.name}'")
 
@@ -294,8 +297,8 @@ def process_queue(tokens):
 
                 if not tokens[tsc.name]['consumer_key']:
                     print(
-                        f"The schedule '{tsc.name}' need the Twitter account tokens.\n"
-                        f"Write them in 'qbot.json' and try again.")
+                        f"The schedule '{tsc.name}' need the Twitter account tokens!"
+                    )
                     continue
 
                 # Tweet
@@ -307,26 +310,29 @@ def process_queue(tokens):
                         wait_on_rate_limit=True,
                         wait_on_rate_limit_notify=True)
 
-                    if post.image_url:
-                        try:
+                    try:
+                        if post.image_url:
                             api.update_with_media(post.image_url, post.text)
                             print(f"Tweeted: {post.text} {post.image_url}")
-                        except tweepy.error.TweepError:
-                            print(
-                                f"Image not found, skipping: {post.text} {post.image_url}"
-                            )
-                    else:
-                        api.update_status(post.text)
-                        print(f"Tweeted: {post.text} ")
+                        else:
+                            api.update_status(post.text)
+                            print(f"Tweeted: {post.text} ")
 
-                    # Mark the post as published, and register the hour used time
+                        # Mark the post as published, and register the hour used time
+                        post.published = True
+                        DB.add(post)
+                        hour.used = datetime.now()
+                        DB.add(hour)
+                        DB.commit()
 
-                    post.published = True
-                    hour.used = datetime.now()
+                    except tweepy.error.TweepError as err:
+                        img = post.image_url if post.image_url is not None else ""
+                        print(f"Skipped, error: {err} in: {post.text} {img}")
 
-                    DB.add(hour)
-                    DB.add(post)
-                    DB.commit()
+                        # Mark the post as published only
+                        post.published = True
+                        DB.add(post)
+                        DB.commit()
 
             else:
                 print("The queue is empty!")
@@ -337,7 +343,7 @@ def process_queue(tokens):
 
 if __name__ == "__main__":
 
-    print("""      ;
+    print("""
      ["]
     /[_]\\
      ] [""")
@@ -358,11 +364,11 @@ if __name__ == "__main__":
         "-p",
         "--process-queue",
         help=
-        "start the queue process, updates config from the files in the watch list, then tweets based on the schedules",
+        "start the queue process, updates data from the files in the watch list, then tweets based on the schedules",
         action="store_true")
-    args = PARSER.parse_args()
+    ARGS = PARSER.parse_args()
 
-    if not args.watch_json and not args.process_queue:
+    if not ARGS.watch_json and not ARGS.process_queue:
         PARSER.print_usage()
         PARSER.exit()
 
@@ -406,9 +412,12 @@ if __name__ == "__main__":
     with open(TOKENS_FILE, "w") as f:
         json.dump(TOKENS, f, indent=True)
 
-    # Do it
+    # Options
 
-    # process_queue(TOKENS)
-    # update_from_message("qbot.json")
-    watch_json(r"D:\Downloads\Test\file")
+    for jf in ARGS.watch_json:
+        watch_json(jf)
+
+    if ARGS.process_queue:
+        process_queue(TOKENS)
+
     print(f"\nAll done! ({round(time.time()-DELTA)}s)")
