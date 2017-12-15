@@ -173,9 +173,10 @@ def watch_json(filename):
 
     # Add it to the watch list
 
-    with open(filename, "w") as f:
-        json.dump(jsonmessage, f, indent=True)
-        print(f"Added to the watch list: '{filename}'")
+    if not os.path.exists(filename):
+        with open(filename, "w") as f:
+            json.dump(jsonmessage, f, indent=True)
+            print(f"Added to the watch list: '{filename}'")
 
     watch = DB.query(Watch).filter(Watch.path == filename).first()
     if watch is None:
@@ -341,7 +342,20 @@ def process_queue(tokens):
             print(f"No pending hours!")
 
 
+def prune_watch_list():
+    """ Delete orphan files from the watch list. """
+    watch = DB.query(Watch).all()
+    for w in watch:
+        if not os.path.exists(w.path):
+            DB.delete(w)
+            print(f"Pruned: {w.path}")
+    DB.commit()
+    print(f"Watch list clean!")
+
+
 if __name__ == "__main__":
+
+    DELTA = time.time()
 
     print("""
      ["]
@@ -361,18 +375,22 @@ if __name__ == "__main__":
         nargs="+",
         default=[])
     PARSER.add_argument(
-        "-p",
-        "--process-queue",
+        "-s",
+        "--start-queue",
         help=
         "start the queue process, updates data from the files in the watch list, then tweets based on the schedules",
         action="store_true")
+    PARSER.add_argument(
+        "-p",
+        "--prune",
+        help="remove orphan files from the watch list",
+        action="store_true")
     ARGS = PARSER.parse_args()
 
-    if not ARGS.watch_json and not ARGS.process_queue:
+    # This is dangerous, all new options need to be here or they will be ignored
+    if not ARGS.watch_json and not ARGS.start_queue and not ARGS.prune:
         PARSER.print_usage()
         PARSER.exit()
-
-    DELTA = time.time()
 
     # Frozen / not frozen, cxfreeze compatibility
 
@@ -414,10 +432,13 @@ if __name__ == "__main__":
 
     # Options
 
+    if ARGS.prune:
+        prune_watch_list()
+
     for jf in ARGS.watch_json:
         watch_json(jf)
 
-    if ARGS.process_queue:
+    if ARGS.start_queue:
         process_queue(TOKENS)
 
     print(f"\nAll done! ({round(time.time()-DELTA)}s)")
