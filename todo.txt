@@ -1,11 +1,12 @@
 
         To do
 
-    Info option (by default?)
 
-    Tokens should be inside the database?
+    Option to cascade delete a schedule
+    Info option (by default)
+
     QBot message option to auto queue images from folder (image name as text, image as image)
-    Change queue order somehow
+    Tokens should be inside the database
 
     Tweets with errors should return to the json config message file to be fixed
     Database should reflect tweets with errors instead of just mark them as published
