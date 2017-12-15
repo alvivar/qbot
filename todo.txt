@@ -2,7 +2,6 @@
         To do
 
     Info option (by default?)
-    Prune orphan files
 
     Tokens should be inside the database?
     QBot message option to auto queue images from folder (image name as text, image as image)
@@ -13,6 +12,11 @@
 
     An option to remain open waiting for times to tweet
     Tweet more that once per run if it fits
+
+
+    2017/12/15 03:56 pm
+    x Prune orphan files
+    x Don't overwrite a file to watch that already exists
 
     2017/12/13 10
     x Console app input rules
