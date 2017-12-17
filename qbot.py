@@ -387,7 +387,7 @@ if __name__ == "__main__":
         action="store_true")
     ARGS = PARSER.parse_args()
 
-    # This is dangerous, all new options need to be here or they will be ignored
+    # DANGEROUS CODE: All new options need to be here or they will be ignored
     if not ARGS.watch_json and not ARGS.start_queue and not ARGS.prune:
         PARSER.print_usage()
         PARSER.exit()
@@ -397,7 +397,7 @@ if __name__ == "__main__":
     DIR = os.path.normpath(
         os.path.dirname(
             sys.executable if getattr(sys, 'frozen', False) else __file__))
-    os.chdir(DIR)
+    os.chdir(DIR)  # The current dir should be the script home
 
     # Twitter tokens are needed, one set by schedule
 
