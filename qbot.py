@@ -176,7 +176,7 @@ def watch_json(filename):
     if not os.path.exists(filename):
         with open(filename, "w") as f:
             json.dump(jsonmessage, f, indent=True)
-            print(f"Added to the watch list: '{filename}'")
+    print(f"Added to the watch list: '{filename}'")
 
     watch = DB.query(Watch).filter(Watch.path == filename).first()
     if watch is None:
@@ -273,8 +273,8 @@ def process_queue(tokens):
 
         hour = DB.query(Time).filter(
             and_(Time.schedule_id == tsc.id, Time.used < today.date(),
-                 Time.hour + 1 / Time.minute <=
-                 today.hour + 1 / today.minute)).first()
+                 Time.hour + Time.minute / 100 <=
+                 today.hour + today.minute / 100)).first()
 
         print(f"Schedule '{tsc.name}'")
 
