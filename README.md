@@ -1,1 +1,1 @@
-#### Python Bot/library that queues tweets to post them later!
+#### Python Bot/library that tweets on schedules, using json files as configuration!
