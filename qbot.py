@@ -268,6 +268,9 @@ def process_queue(tokens):
     todaysched = DB.query(Schedule).filter(
         get_schedule_column(today.weekday())).all()
 
+    if not todaysched:
+        print("No schedules today")
+
     # Look for an hour that fits
     for tsc in todaysched:
 
@@ -442,3 +445,4 @@ if __name__ == "__main__":
         process_queue(TOKENS)
 
     print(f"\nAll done! ({round(time.time()-DELTA)}s)")
+    input("OK?")
