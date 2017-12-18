@@ -2,7 +2,8 @@
         To do
 
 
-    Option to cascade delete a schedule
+    An option to remain open waiting for times to tweet
+    Tweet more that once per run if it fits
     Info option (by default)
 
     QBot message option to auto queue images from folder (image name as text, image as image)
@@ -11,8 +12,7 @@
     Tweets with errors should return to the json config message file to be fixed
     Database should reflect tweets with errors instead of just mark them as published
 
-    An option to remain open waiting for times to tweet
-    Tweet more that once per run if it fits
+    Option to cascade delete a schedule
 
 
     2017/12/15 03:56 pm
