@@ -390,9 +390,10 @@ if __name__ == "__main__":
         help="remove orphan files from the watch list",
         action="store_true")
     PARSER.add_argument(
-        "-d",
-        "--delay",
-        help="seconds to wait between queue processes, 60 seconds default",
+        "-r",
+        "--repeat",
+        help=
+        "seconds to wait between queue processes, 60s default, 0 to deactivate",
         default=60,
         type=int)
     ARGS = PARSER.parse_args()
@@ -474,13 +475,14 @@ if __name__ == "__main__":
 
             process_queue(TOKENS)
 
-            print("\nWrite 'stop' and press enter to quit:")
-
-            while REPEAT and WAIT < ARGS.delay:
-                WAIT += 1
-                time.sleep(1)
-
+            REPEAT = False if ARGS.repeat <= 0 else REPEAT
             if REPEAT:
+                print("\nWrite 'stop' and press enter to quit:")
+
+                while REPEAT and WAIT < ARGS.repeat:
+                    WAIT += 1
+                    time.sleep(1)
+
                 WAIT = 0
                 COUNT += 1
                 print(f"\n#{COUNT}\n")
