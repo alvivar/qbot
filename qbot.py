@@ -393,8 +393,8 @@ if __name__ == "__main__":
         "-r",
         "--repeat",
         help=
-        "seconds to wait between queue processes, 60s default, 0 to deactivate",
-        default=60,
+        "seconds to wait between queue processes, 300s default, use 0 or less to not repeat at all",
+        default=300,
         type=int)
     ARGS = PARSER.parse_args()
 
