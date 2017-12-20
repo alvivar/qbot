@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import sys
+import threading
 import time
 from datetime import datetime
 
@@ -374,7 +375,7 @@ if __name__ == "__main__":
         "-w",
         "--watch-json",
         help=
-        "create and add to the watch list a json file to be used as configuration and data input",
+        "create or add to the watch list a json file to be used as configuration and data input for a schedule",
         nargs="+",
         default=[])
     PARSER.add_argument(
@@ -388,6 +389,12 @@ if __name__ == "__main__":
         "--prune",
         help="remove orphan files from the watch list",
         action="store_true")
+    PARSER.add_argument(
+        "-d",
+        "--delay",
+        help="seconds to wait between queue processes, 60 seconds default",
+        default=60,
+        type=int)
     ARGS = PARSER.parse_args()
 
     # DANGEROUS CODE: All new options need to be here or they will be ignored
@@ -442,7 +449,41 @@ if __name__ == "__main__":
         watch_json(jf)
 
     if ARGS.start_queue:
-        process_queue(TOKENS)
+
+        # Thread to detect 'stop' and stop the repeat cycle
+
+        REPEAT = True
+
+        def stop_repeat():
+            while True:
+                text = input()
+                global REPEAT
+                if "stop" in text:
+                    REPEAT = False
+                    break
+
+        THREAD = threading.Thread(target=stop_repeat)
+        THREAD.daemon = True
+        THREAD.start()
+
+        # Repeat cycle
+
+        WAIT = 0
+        COUNT = 1
+        while REPEAT:
+
+            process_queue(TOKENS)
+
+            print("\nWrite 'stop' and press enter to quit:")
+
+            while REPEAT and WAIT < ARGS.delay:
+                WAIT += 1
+                time.sleep(1)
+
+            if REPEAT:
+                WAIT = 0
+                COUNT += 1
+                print(f"\n#{COUNT}\n")
 
     print(f"\nAll done! ({round(time.time()-DELTA)}s)")
-    input("OK?")
+    time.sleep(4)
