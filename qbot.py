@@ -479,13 +479,14 @@ if __name__ == "__main__":
             if REPEAT:
                 print("\nWrite 'stop' and press enter to quit:")
 
-                while REPEAT and WAIT < ARGS.repeat:
-                    WAIT += 1
-                    time.sleep(1)
+            while REPEAT and WAIT < ARGS.repeat:
+                WAIT += 1
+                time.sleep(1)
 
+            if REPEAT:
                 WAIT = 0
                 COUNT += 1
                 print(f"\n#{COUNT}\n")
 
     print(f"\nAll done! ({round(time.time()-DELTA)}s)")
-    time.sleep(4)
+    time.sleep(3)
