@@ -451,7 +451,7 @@ if __name__ == "__main__":
 
     if ARGS.start_queue:
 
-        # Thread to detect 'stop' and stop the repeat cycle
+        # Thread to detect 'q' input and stop the repeat cycle
 
         REPEAT = True
 
@@ -459,7 +459,7 @@ if __name__ == "__main__":
             while True:
                 text = input()
                 global REPEAT
-                if "stop" in text:
+                if text == "q":
                     REPEAT = False
                     break
 
@@ -477,16 +477,21 @@ if __name__ == "__main__":
 
             REPEAT = False if ARGS.repeat <= 0 else REPEAT
             if REPEAT:
-                print("\nWrite 'stop' and press enter to quit:")
+                print()
 
             while REPEAT and WAIT < ARGS.repeat:
+                sys.stdout.write(
+                    f"\rWrite 'q' and press enter to quit ({ARGS.repeat - WAIT}s): "
+                )
+                sys.stdout.flush()
+
                 WAIT += 1
                 time.sleep(1)
 
             if REPEAT:
                 WAIT = 0
                 COUNT += 1
-                print(f"\n#{COUNT}\n")
+                print(f"\n\n#{COUNT}\n")
 
     print(f"\nAll done! ({round(time.time()-DELTA)}s)")
-    time.sleep(3)
+    time.sleep(2)
