@@ -117,8 +117,17 @@ def queue_post(schedule_name, text, image_url=None):
         DB.add(schedule)
         DB.flush()
 
+    # If repeated, rollback
+    post = DB.query(Post).filter(
+        and_(Post.schedule_id == schedule.id, Post.text == text)).first()
+
+    if post:
+        DB.rollback()
+        return post
+
     # New post
     post = Post()
+
     post.text = text
     post.image_url = image_url
     post.schedule_id = schedule.id
