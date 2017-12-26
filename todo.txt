@@ -2,21 +2,22 @@
         To do
 
 
+    Bot option to print the log
+    Option to set a schedule to n posts between 2 hours
     Updating data from watch files need to log out the watch files participating
     Give a hint of the tweet to tweet before the tweet
     Try the next tweet if the current fails
+
+    QBot message option to auto queue images from folder (image name as text, image as image)
 
     Database should reflect tweets with errors instead of just mark them as published
     Tweets with errors should return to the json config message file to be fixed
 
     Detect and survive when there isn't Internet
-    First hour to tweet should be the closest next, not the first one to the current hour
-
-    QBot message option to auto queue images from folder (image name as text, image as image)
-    Tweet more that once per run (configurable)
-
-    Tokens should be inside the database
     Option to cascade delete a schedule
+    Tokens should be inside the database
+    After starting, first hour to tweet should be the closest to current time, not the first one to the current hour, once?
+    Tweet more that once per run (configurable)
 
 
     2017/12/20 02:40 pm
