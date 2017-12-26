@@ -19,7 +19,7 @@
     After starting, first hour to tweet should be the closest to current time, not the first one to the current hour, once?
     Tweet more that once per run (configurable)
 
-
+`
     2017/12/20 02:40 pm
     x An option to remain open waiting for times to tweet
 
