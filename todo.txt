@@ -2,6 +2,7 @@
         To do
 
 
+    Bot option to pause to scroll over the window
     Bot option to print the log
     Option to set a schedule to n posts between 2 hours
     Updating data from watch files need to log out the watch files participating
