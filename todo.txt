@@ -9,6 +9,8 @@
     Give a hint of the tweet to tweet before the tweet
     Try the next tweet if the current fails
 
+    Wait time should be exactly the time next for the next queue?
+
     QBot message option to auto queue images from folder (image name as text, image as image)
 
     Database should reflect tweets with errors instead of just mark them as published
