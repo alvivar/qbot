@@ -333,17 +333,20 @@ def process_queue(tokens):
                             print(f"Tweeted: {post.text} ")
 
                         # Mark the post as published, and register the hour used time
+
                         post.published = True
                         DB.add(post)
+
                         hour.used = datetime.now()
                         DB.add(hour)
+
                         DB.commit()
 
                     except tweepy.error.TweepError as err:
                         img = post.image_url if post.image_url is not None else ""
                         print(f"Skipped, error: {err} in: {post.text} {img}")
 
-                        # Mark the post as published only
+                        # TODO Mark the post as error instead of published
                         post.published = True
                         DB.add(post)
                         DB.commit()
@@ -419,14 +422,14 @@ if __name__ == "__main__":
             sys.executable if getattr(sys, 'frozen', False) else __file__))
     os.chdir(DIR)  # The current dir should be the script home
 
-    # Twitter tokens are needed, one set by schedule
+    # Twitter tokens are needed
 
     try:
         TOKENS = json.load(open(TOKENS_FILE, 'r'))
     except (IOError, ValueError):
 
         TOKENS = {
-            'default': {
+            'example': {
                 'consumer_key': "",
                 'consumer_secret': "",
                 'oauth_token': "",
@@ -460,15 +463,18 @@ if __name__ == "__main__":
 
     if ARGS.start_queue:
 
-        # Thread to detect 'q' input and stop the repeat cycle
+        # Thread to detect input commands and stop the repeat cycle
 
         REPEAT = True
 
         def stop_repeat():
+            """ Input detection thread. """
             while True:
                 text = input()
                 global REPEAT
-                if text == "q":
+
+                # Quit
+                if text.lower() == "q":
                     REPEAT = False
                     break
 
