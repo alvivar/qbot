@@ -2,12 +2,12 @@
         TO DO
 
 
+    Database should reflect tweets with errors instead of just mark them as published
+    Tweets with errors should return to the json config message file to be fixed
+
     Bot option to print the log
     Bot option to pause to scroll over the window
     Option to set a schedule to n posts between 2 hours
-
-    Database should reflect tweets with errors instead of just mark them as published
-    Tweets with errors should return to the json config message file to be fixed
 
     QBot message option to auto queue images from folder (image name as text, image as image)
 
@@ -23,6 +23,7 @@
     Tweet more that once per run (configurable)
 
     2018/01/04 11:43 am
+    x Console log improved
     x Give a hint of the tweet to tweet before the tweet
 
     2017/12/30 06:53 pm
