@@ -207,7 +207,7 @@ def update_from_file(jsonfile):
     try:
         message = json.load(open(jsonfile, 'r'))
     except (IOError, ValueError):
-        print(f"This file doesn't exists or is not a valid json: '{jsonfile}'")
+        print(f"This file doesn't exists or isn't a valid json: '{jsonfile}'")
         return
 
     # Schedule
@@ -216,16 +216,19 @@ def update_from_file(jsonfile):
     days = [get_int_day(i) for i in message['schedule']['days']]
     hours = [tuple(x.split(":")) for x in message['schedule']['hours']]
 
+    print(f"\nUpdating '{schedule}' from '{jsonfile}'")
+
     if message['options']["refresh_schedule"]:
         update_schedule(schedule, days, hours)
         message['options']["refresh_schedule"] = False
+        print(f"New schedule updated")
 
     # Posts
-
-    for post in message['messages']:
+    for i, post in enumerate(message['messages']):
         text = post['text']
         image = post['image'] if "image" in post else None
         queue_post(schedule, text, image)
+        print(f"\n#{i+1} New post queued:\n{text} {image if image else ''}")
 
     # Response is in the same file
 
@@ -302,6 +305,12 @@ def process_queue(tokens):
 
             if post:
 
+                # Announce
+
+                print(
+                    f"Trying to tweet:\n{post.text} {post.image_url if post.image_url else ''}"
+                )
+
                 # Twitter auth and tokens validation
 
                 auth = tweepy.OAuthHandler(tokens[tsc.name]['consumer_key'],
@@ -311,7 +320,7 @@ def process_queue(tokens):
 
                 if not tokens[tsc.name]['consumer_key']:
                     print(
-                        f"The schedule '{tsc.name}' need the Twitter account tokens!"
+                        f"The schedule '{tsc.name}' doesn't have the Twitter tokens! Add them to the tokens file!"
                     )
                     continue
 
@@ -327,10 +336,9 @@ def process_queue(tokens):
                     try:
                         if post.image_url:
                             api.update_with_media(post.image_url, post.text)
-                            print(f"Tweeted: {post.text} {post.image_url}")
                         else:
                             api.update_status(post.text)
-                            print(f"Tweeted: {post.text} ")
+                        print(f"Done!")
 
                         # Mark the post as published, and register the hour used time
 
@@ -344,7 +352,7 @@ def process_queue(tokens):
 
                     except tweepy.error.TweepError as err:
                         img = post.image_url if post.image_url is not None else ""
-                        print(f"Skipped, error: {err} in: {post.text} {img}")
+                        print(f"Skipped, error: {err}")
 
                         # TODO Mark the post as error instead of published
                         post.published = True
@@ -364,7 +372,7 @@ def prune_watch_list():
     for w in watch:
         if not os.path.exists(w.path):
             DB.delete(w)
-            print(f"Pruned: {w.path}")
+            print(f"Pruned: '{w.path}'")
     DB.commit()
     print(f"Watch list clean!")
 
@@ -469,14 +477,11 @@ if __name__ == "__main__":
 
         def stop_repeat():
             """ Input detection thread. """
-            while True:
+            global REPEAT
+            while REPEAT:
                 text = input()
-                global REPEAT
-
-                # Quit
-                if text.lower() == "q":
+                if text.lower() == "q":  # Quit
                     REPEAT = False
-                    break
 
         THREAD = threading.Thread(target=stop_repeat)
         THREAD.daemon = True
