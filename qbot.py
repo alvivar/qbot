@@ -216,7 +216,7 @@ def update_from_file(jsonfile):
     days = [get_int_day(i) for i in message['schedule']['days']]
     hours = [tuple(x.split(":")) for x in message['schedule']['hours']]
 
-    print(f"\nUpdating '{schedule}' from '{jsonfile}'")
+    print(f"\nUpdating '{schedule}' from\n'{jsonfile}'")
 
     if message['options']["refresh_schedule"]:
         update_schedule(schedule, days, hours)
