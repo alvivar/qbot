@@ -11,6 +11,8 @@
 
     QBot message option to auto queue images from folder (image name as text, image as image)
 
+    Instructions for everyone
+
     Detect and survive when there is no internet
     Try the next tweet if the current fails (this could be a problem when there is no internet)
 
