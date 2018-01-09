@@ -273,9 +273,8 @@ def process_queue(tokens):
     today = datetime.today()
 
     strday = str(get_schedule_column(today.weekday())).replace("Schedule.", "")
-    print(
-        f"\nQueue processing started "
-        f"({strday.title()} {today.date()} {today.hour}:{today.minute:02})\n")
+    print(f"\nQueue processing started "
+          f"({strday.title()} {today.date()} {today.hour}:{today.minute:02})")
 
     # Get all the schedules for today
     todaysched = DB.query(Schedule).filter(
@@ -292,7 +291,7 @@ def process_queue(tokens):
                  Time.hour + Time.minute / 100 <=
                  today.hour + today.minute / 100)).first()
 
-        print(f"Schedule '{tsc.name}'")
+        print(f"\nSchedule '{tsc.name}'")
 
         if hour:
 
@@ -320,7 +319,7 @@ def process_queue(tokens):
 
                 if not tokens[tsc.name]['consumer_key']:
                     print(
-                        f"The schedule '{tsc.name}' doesn't have the Twitter tokens! Add them to the tokens file!"
+                        f"The schedule '{tsc.name}' doesn't have the Twitter tokens, add them to the tokens file!"
                     )
                     continue
 
