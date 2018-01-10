@@ -417,7 +417,7 @@ if __name__ == "__main__":
         type=int)
     ARGS = PARSER.parse_args()
 
-    # DANGEROUS CODE: All new options need to be here or they will be ignored
+    # TODO DANGEROUS code: All new options need to be here or they will be ignored
     if not ARGS.watch_json and not ARGS.start_queue and not ARGS.prune:
         PARSER.print_usage()
         PARSER.exit()
