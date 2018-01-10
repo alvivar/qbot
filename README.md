@@ -1,17 +1,20 @@
-# QBot
+# Qbot
 ## Python bot that tweets on schedules, using json files as configuration!
 
 ### Instructions
 
 - Use **'python qbot.py -w "somepath/somename.json"'** to create a **json** file somewhere
-- Modify the **json** file with your info, including tweet schedule, messages, twitter account tokens
+- Modify the **json** file with your stuff, including tweet schedule, messages, twitter account tokens
 - Use **'python qbot.py -s'** to start the queue process!
+- Qbot will tweet all messages based on your schedules for any Qbot **json** file you create
 - Repeat!
 
 ### Tips
 
-- Use **'python setup.py build'** to create a cx_Freeze executable
-- Create a script that programatically add messages to the **json** file
+- Create a script that programatically add messages to the **json** file (I do this for all my bots)
+- Use **'python setup.py build'** to create a executable using cx_Freeze
+- Cron or Task schedule **'python qbot.py -s'** or the executable
+- The database is a sqlite named **data.db**, use a software like [sqlitebrowser.org](http://sqlitebrowser.org/) to read or modify it
 
 ### More details
 
