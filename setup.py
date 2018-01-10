@@ -7,7 +7,7 @@ OPTIONS = {'build_exe': {'includes': ['sqlalchemy.sql.default_comparator']}}
 EXECUTABLES = [Executable('qbot.py', targetName='qbot.exe')]
 
 setup(
-    name='QBot',
+    name='Qbot',
     version='0.1',
     description=
     "Bot that tweets on schedules, using json files as configuration",
