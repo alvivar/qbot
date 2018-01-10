@@ -2,17 +2,15 @@
         TO DO
 
 
+    Detect and survive when there is no internet (ops)
     Database should reflect tweets with errors instead of just mark them as published
-    Tweets with errors should return to the json config message file to be fixed
+    Tweets with errors should return to the json watched file to be fixed
+    Try the next tweet if the current fails (this could be a problem when there is no internet)
 
-    Bot option to print the log
-    Bot option to pause to scroll over the window?
+    Bot option to print the session log
     Option to set a schedule to n posts between 2 hours
 
     Qbot message option to auto queue images from folder (image name as text, image as image)
-
-    Detect and survive when there is no internet
-    Try the next tweet if the current fails (this could be a problem when there is no internet)
 
     Wait time should be exactly the time next for the next queue?
     Implement logging instead of print (sexyness +1)
