@@ -16,7 +16,7 @@ from qdb import Post, Schedule, Time, Watch, init_database, sessionmaker
 # Constants
 TOKENS_FILE = "tokens.json"
 
-# Database SQLAlchemy + SQLite
+# SQLAlchemy + SQLite
 ENGINE = init_database()
 SESSION = sessionmaker(bind=ENGINE)
 DB = SESSION()
@@ -497,11 +497,13 @@ if __name__ == "__main__":
         REPEAT = True
 
         def stop_repeat():
-            """ Input detection thread. """
+            """
+                Input detection thread.
+            """
             global REPEAT
             while REPEAT:
                 text = input()
-                if text.lower() == "q":  # Quit
+                if text.strip().lower() == "q":  # Quit
                     REPEAT = False
 
         THREAD = threading.Thread(target=stop_repeat)
