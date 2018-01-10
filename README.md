@@ -12,9 +12,9 @@
 ### Tips
 
 - Create a script that programatically add messages to the **json** file (I do this for all my bots)
-- Use **'python setup.py build'** to create a executable using cx_Freeze
-- Cron or Task schedule **'python qbot.py -s'** or the executable
-- The database is a sqlite named **data.db**, use a software like [sqlitebrowser.org](http://sqlitebrowser.org/) to read or modify it
+- Use **'python setup.py build'** to create a executable using **cx_Freeze**
+- Cron or task schedule **'python qbot.py -s'** or the executable
+- The database is a sqlite named **data.db**, use a software like [sqlitebrowser](http://sqlitebrowser.org/) to read or modify it
 
 ### More details
 
