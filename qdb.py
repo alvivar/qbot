@@ -1,4 +1,6 @@
-""" Handles all qbot data using SQLAlchemy and sqlite. """
+"""
+    Handles all qbot data using SQLAlchemy and sqlite.
+"""
 
 import datetime
 import os
@@ -13,7 +15,9 @@ BASE = declarative_base()
 
 
 class Schedule(BASE):
-    """ Holds the schedule of publication, days and hours. """
+    """
+        Holds the schedule of publication, days and hours.
+    """
     __tablename__ = "schedule"
     id = Column(Integer, primary_key=True)
     times = relationship("Time")
@@ -33,7 +37,9 @@ class Schedule(BASE):
 
 
 class Time(BASE):
-    """ Hours of publication in a Schedule. """
+    """
+        Hours of publication in a Schedule.
+    """
     __tablename__ = "time"
     id = Column(Integer, primary_key=True)
     schedule_id = Column(Integer, ForeignKey("schedule.id"))
@@ -48,7 +54,9 @@ class Time(BASE):
 
 
 class Post(BASE):
-    """ Posts to be published on Schedule time. """
+    """
+        Posts to be published on Schedule time.
+    """
     __tablename__ = "post"
     id = Column(Integer, primary_key=True)
     schedule_id = Column(Integer, ForeignKey("schedule.id"))
@@ -64,7 +72,9 @@ class Post(BASE):
 
 
 class Watch(BASE):
-    """ Folder paths to watch for qbot.json file messages. """
+    """
+        Folder paths to watch for qbot.json file messages.
+    """
     __tablename__ = "watch"
     id = Column(Integer, primary_key=True)
     path = Column(String)
@@ -76,7 +86,9 @@ class Watch(BASE):
 
 
 def init_database():
-    """ Create the database, return the engine. """
+    """
+        Create the database, return the engine.
+    """
 
     # The main dir should be the script dir
     currdir = os.path.normpath(

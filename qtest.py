@@ -1,4 +1,6 @@
-""" Test file to see if everything works. """
+"""
+    Test file to see if everything works.
+"""
 
 import os
 import sys
