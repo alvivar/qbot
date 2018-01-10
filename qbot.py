@@ -23,8 +23,11 @@ DB = SESSION()
 
 
 def get_int_day(strday):
-    """ Return the Schedule.day of the week assuming 'day' as an index from
-    (0-6). """
+    """
+        Return the Schedule.day of the week assuming 'day' as an index from
+        (0-6).
+    """
+
     strday = strday.lower()
     if strday == "monday":
         return 0
@@ -45,8 +48,11 @@ def get_int_day(strday):
 
 
 def get_schedule_column(day):
-    """ Return the Schedule.day of the week assuming 'day' as an index from
-    (0-6). """
+    """
+        Return the Schedule.day of the week assuming 'day' as an index from
+        (0-6).
+    """
+
     if day == 0:
         return Schedule.monday
     elif day == 1:
@@ -64,9 +70,11 @@ def get_schedule_column(day):
 
 
 def update_schedule(name, days, hours):
-    """ Create or update and return a schedule, assuming days as a list of
-    numbers enumerating the days of the week (0-6) and hours a list of tuples of
-    hours and minutes [(h m), ...]. """
+    """
+        Create or update and return a schedule, assuming days as a list of
+        numbers enumerating the days of the week (0-6) and hours a list of
+        tuples of hours and minutes [(h m), ...].
+    """
 
     # Get
     schedule = DB.query(Schedule).filter(Schedule.name == name).first()
@@ -103,7 +111,9 @@ def update_schedule(name, days, hours):
 
 
 def queue_post(schedule_name, text, image_url=None):
-    """ Create a post, return it. If the schedule doesn't exist, create it. """
+    """
+        Create a post, return it. If the schedule doesn't exist, create it.
+    """
 
     # Get
     schedule = DB.query(Schedule).filter(
@@ -139,8 +149,10 @@ def queue_post(schedule_name, text, image_url=None):
 
 
 def watch_json(filename):
-    """ Create a json file that is going to be used as config / communication
-    for the bot every time before processing a queue. """
+    """
+        Create a json file that is going to be used as config / communication
+        for the bot every time before processing a queue.
+    """
 
     jsonmessage = {
         "options": {
@@ -172,8 +184,12 @@ def watch_json(filename):
 
     # File creation
 
-    path = os.path.dirname(filename)
-    name = os.path.basename(filename)
+    if os.path.isdir(filename):
+        path = filename
+        name = "qbot"
+    else:
+        path = os.path.dirname(filename)
+        name = os.path.basename(filename)
 
     if not os.path.exists(path):
         os.makedirs(path)
@@ -197,11 +213,12 @@ def watch_json(filename):
 
 
 def update_from_file(jsonfile):
-    """ The  json file contains all needed information for a working queue. The
-    schedule will be created/updated, the messages will be queued, the tokens
-    will be updated and the file will be modified to reflect changes.
+    """
+        The  json file contains all needed information for a working queue. The
+        schedule will be created/updated, the messages will be queued, the
+        tokens will be updated and the file will be modified to reflect changes.
 
-    Check out the json inside 'watch_json(' function as reference.
+        Check out the json inside 'watch_json(' function as reference.
     """
 
     try:
@@ -258,8 +275,10 @@ def update_from_file(jsonfile):
 
 
 def process_queue(tokens):
-    """ First update all schedules and data from the watch list files, then
-    tweet queued post based on the schedules. One at a time. """
+    """
+        First update all schedules and data from the watch list files, then
+        tweet queued post based on the schedules. One at a time.
+    """
 
     # Update data from the watch list
 
@@ -366,7 +385,10 @@ def process_queue(tokens):
 
 
 def prune_watch_list():
-    """ Delete orphan files from the watch list. """
+    """
+        Delete orphan files from the watch list.
+    """
+
     watch = DB.query(Watch).all()
     for w in watch:
         if not os.path.exists(w.path):
