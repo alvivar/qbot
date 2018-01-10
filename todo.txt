@@ -2,8 +2,6 @@
         TO DO
 
 
-    Bug: Watching -w a file fails when the folder name contains .
-
     Database should reflect tweets with errors instead of just mark them as published
     Tweets with errors should return to the json config message file to be fixed
 
@@ -11,7 +9,7 @@
     Bot option to pause to scroll over the window?
     Option to set a schedule to n posts between 2 hours
 
-    QBot message option to auto queue images from folder (image name as text, image as image)
+    Qbot message option to auto queue images from folder (image name as text, image as image)
 
     Instructions for everyone
 
@@ -25,6 +23,9 @@
     Tokens should be inside the database
     After starting, first hour to tweet should be the closest to current time, not the first one to the current hour, once?
     Tweet more that once per run (configurable)
+
+    2018/01/09 09:29 pm
+    x Bug: Watching -w a file fails when the folder name contains .
 
     2018/01/04 11:43 am
     x Console log improved
@@ -51,12 +52,12 @@
     x Watch list analisis before queue process
     x Watch list in the db
     x Watch list that creates a message file on the folder
-    x QBot message update messages
+    x Qbot message update messages
 
     2017/12/11
-    x QBot message update tokens
-    x QBot message update schedule
-    x File format that works as a file link between apps using QBot
+    x Qbot message update tokens
+    x Qbot message update schedule
+    x File format that works as a file link between apps using Qbot
     x Queue text and images
     x Validate tokens
 
