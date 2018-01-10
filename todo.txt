@@ -11,8 +11,6 @@
 
     Qbot message option to auto queue images from folder (image name as text, image as image)
 
-    Instructions for everyone
-
     Detect and survive when there is no internet
     Try the next tweet if the current fails (this could be a problem when there is no internet)
 
@@ -25,6 +23,7 @@
     Tweet more that once per run (configurable)
 
     2018/01/09 09:29 pm
+    x Instructions for everyone
     x Bug: Watching -w a file fails when the folder name contains .
 
     2018/01/04 11:43 am
