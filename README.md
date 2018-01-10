@@ -3,11 +3,11 @@
 
 ### Instructions
 
-- Use 'python qbot.py -w "path/to/somewhere"' to create a 'qbot.json' file at that path
-- Modify the 'qbot.json' file with your info, including tweet schedule, messages, twitter account tokens
-- Use 'python qbot.py -s' to start the queue process!
+- Use **'python qbot.py -w "path/to/somewhere"'** to create a **qbot.json** file at that path
+- Modify the **qbot.json** file with your info, including tweet schedule, messages, twitter account tokens
+- Use **'python qbot.py -s'** to start the queue process!
 - Repeat
-- Bonus: Use 'python setup.py build' to create an executable with cx_Freeze
+- Bonus: Use **'python setup.py build'** to create an executable with cx_Freeze
 
 ```
      ["]
