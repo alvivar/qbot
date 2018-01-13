@@ -274,7 +274,7 @@ def update_from_file(jsonfile):
         json.dump(tokens, f, indent=True)
 
 
-def process_queue(tokens):
+def process_queue():
     """
         First update all schedules and data from the watch list files, then
         tweet queued post based on the schedules. One at a time.
@@ -330,6 +330,8 @@ def process_queue(tokens):
                 )
 
                 # Twitter auth and tokens validation
+
+                tokens = json.load(open(TOKENS_FILE, 'r'))
 
                 auth = tweepy.OAuthHandler(tokens[tsc.name]['consumer_key'],
                                            tokens[tsc.name]['consumer_secret'])
@@ -459,10 +461,10 @@ if __name__ == "__main__":
 
         TOKENS = {
             'example': {
-                'consumer_key': "",
-                'consumer_secret': "",
-                'oauth_token': "",
-                'oauth_secret': ""
+                'consumer_key': "find",
+                'consumer_secret': "them",
+                'oauth_token': "on",
+                'oauth_secret': "apps.twitter.com"
             }
         }
 
@@ -516,7 +518,7 @@ if __name__ == "__main__":
         COUNT = 1
         while REPEAT:
 
-            process_queue(TOKENS)
+            process_queue()
 
             REPEAT = False if ARGS.repeat <= 0 else REPEAT
             if REPEAT:
