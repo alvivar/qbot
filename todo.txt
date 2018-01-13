@@ -2,6 +2,7 @@
         TO DO
 
 
+    Bug: Watching -w a file fails when the folder name contains .
     Detect and survive when there is no internet (ops)
     Database should reflect tweets with errors instead of just mark them as published
     Tweets with errors should return to the json watched file to be fixed
@@ -22,7 +23,6 @@
 
     2018/01/09 09:29 pm
     x Instructions for everyone
-    x Bug: Watching -w a file fails when the folder name contains .
 
     2018/01/04 11:43 am
     x Console log improved
