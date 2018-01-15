@@ -1,4 +1,5 @@
 # Qbot
+
 ## Python bot that tweets on schedules, using json files as configuration!
 
 ### Instructions
@@ -6,7 +7,7 @@
 - Use **'python qbot.py -w "somepath/somename.json"'** to create a **json** file somewhere
 - Modify the **json** file with your stuff, including tweet schedule, messages, twitter account tokens
 - Use **'python qbot.py -s'** to start the queue process!
-- Qbot will tweet all messages based on your schedules for any Qbot **json** file you create
+- **Qbot** will tweet all messages based on your schedules for any **json** file you created with it
 - Repeat!
 
 ### Tips
