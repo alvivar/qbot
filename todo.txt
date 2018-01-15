@@ -2,6 +2,8 @@
         TO DO
 
 
+    qbot.json missing structure should regenerate on demand, this the only requirement for other scripts is to add the messages dictionary
+
     Bug: Watching -w a file fails when the folder name contains .
     Detect and survive when there is no internet (ops)
     Database should reflect tweets with errors instead of just mark them as published
