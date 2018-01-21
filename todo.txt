@@ -2,7 +2,10 @@
         TO DO
 
 
+    Auto queue images and text from folder (file name as text)
+    Auto queue text tweets from a simple file
     qbot.json missing structure should regenerate on demand, this the only requirement for other scripts is to add the messages dictionary
+    Tumblr support
 
     Bug: Watching -w a file fails when the folder name contains .
     Detect and survive when there is no internet (ops)
@@ -12,8 +15,6 @@
 
     Bot option to print the session log
     Option to set a schedule to n posts between 2 hours
-
-    Qbot message option to auto queue images from folder (image name as text, image as image)
 
     Wait time should be exactly the time next for the next queue?
     Implement logging instead of print (sexyness +1)
