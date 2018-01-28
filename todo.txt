@@ -2,6 +2,7 @@
         TO DO
 
 
+    Rename repeat argument to delay
     Auto queue images and text from folder (file name as text)
     Auto queue text tweets from a simple file
     qbot.json missing structure should regenerate on demand, this the only requirement for other scripts is to add the messages dictionary
