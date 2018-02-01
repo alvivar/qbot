@@ -1,6 +1,6 @@
 # Qbot
 
-## Python bot that tweets on schedules, using json files as configuration!
+## Bot that tweets on schedules, using json files as configuration!
 
 ### Instructions
 
