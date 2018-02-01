@@ -2,9 +2,11 @@
         TO DO
 
 
-    Current timer should be saved on the config file?
     Auto queue images and text from folder (file name as text)
     Auto queue text tweets from a simple file
+
+    An option to ignore the application start datetime validation
+    Current timer should be saved on the config file?
 
     Tweets with errors should return to the json watched file to be fixed
     Database should reflect tweets with errors instead of just mark them as published
@@ -26,7 +28,7 @@
 
 
     2018/02/01 12:01 am
-    x After starting, first hour to tweet should be the closest to current time, not the first one to the current hour, once?
+    x Avoid tweeting before the application start datetime
 
     2018/01/09 09:29 pm
     x Instructions for everyone
