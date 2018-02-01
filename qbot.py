@@ -304,17 +304,16 @@ def process_queue():
         print("No schedules today")
 
     # Look for an hour that fits, less than current hour, bigger that the
-    # application start datetime
+    # application start datetime hour
     for tsc in todaysched:
 
         starthour = START.hour if START.date() == today.date() else 0
-        startminute = START.minute if START.date() == today.date() else 0
 
         hour = DB.query(Time).filter(
             and_(Time.schedule_id == tsc.id, Time.used < today.date(),
                  Time.hour + Time.minute / 100 <=
-                 today.hour + today.minute / 100, Time.hour + Time.minute / 100
-                 >= starthour + startminute / 100)).first()
+                 today.hour + today.minute / 100,
+                 Time.hour + Time.minute / 100 >= starthour)).first()
 
         print(f"\nSchedule '{tsc.name}'")
 
