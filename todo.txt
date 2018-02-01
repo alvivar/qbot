@@ -2,30 +2,31 @@
         TO DO
 
 
-    Current timer should be saved on the config file
-    Rename repeat argument to delay
-
+    Current timer should be saved on the config file?
     Auto queue images and text from folder (file name as text)
     Auto queue text tweets from a simple file
-    qbot.json missing structure should regenerate on demand, this the only requirement for other scripts is to add the messages dictionary
-    Tumblr support
 
-    Bug: Watching -w a file fails when the folder name contains .
-    Detect and survive when there is no internet (ops)
-    Database should reflect tweets with errors instead of just mark them as published
     Tweets with errors should return to the json watched file to be fixed
+    Database should reflect tweets with errors instead of just mark them as published
+
+    Bug? Watching -w a file fails when the folder name contains .
+    qbot.json missing structure should regenerate on demand, this the only requirement for other scripts is to add the messages dictionary
+
+    Detect and survive when there is no internet (ops)
     Try the next tweet if the current fails (this could be a problem when there is no internet)
 
+    Tumblr support
     Bot option to print the session log
     Option to set a schedule to n posts between 2 hours
-
-    Wait time should be exactly the time next for the next queue?
-    Implement logging instead of print (sexyness +1)
+    Tweet more that once per run (configurable)
 
     Option to cascade delete a schedule
-    Tokens should be inside the database
-    After starting, first hour to tweet should be the closest to current time, not the first one to the current hour, once?
-    Tweet more that once per run (configurable)
+    Tokens should be inside the database?
+    Implement logging instead of print (sexyness +1)
+
+
+    2018/02/01 12:01 am
+    x After starting, first hour to tweet should be the closest to current time, not the first one to the current hour, once?
 
     2018/01/09 09:29 pm
     x Instructions for everyone
