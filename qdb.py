@@ -1,5 +1,5 @@
 """
-    Handles all qbot data using SQLAlchemy and sqlite.
+    Handles all Qbot data using SQLAlchemy and sqlite.
 """
 
 import datetime
@@ -90,12 +90,12 @@ def init_database():
         Create the database, return the engine.
     """
 
-    # The main dir should be the script dir
-    currdir = os.path.normpath(
+    # The current dir should be the script home
+    homedir = os.path.normpath(
         os.path.dirname(
             sys.executable if getattr(sys, 'frozen', False) else
-            __file__))  # Frozen / not frozen, cxfreeze compatibility
-    os.chdir(currdir)
+            __file__))  # cx_Freeze compatibility
+    os.chdir(homedir)
 
     engine = create_engine("sqlite:///data.db")
     BASE.metadata.bind = engine
