@@ -531,7 +531,7 @@ if __name__ == "__main__":
 
             while REPEAT and WAIT < ARGS.repeat:
                 sys.stdout.write(
-                    f"\r'q' and enter to quit ({ARGS.repeat - WAIT}s): ")
+                    f"\r'q' + enter to quit ({ARGS.repeat - WAIT}s): ")
                 sys.stdout.flush()
 
                 WAIT += 1
