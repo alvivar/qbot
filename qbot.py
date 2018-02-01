@@ -14,6 +14,7 @@ from sqlalchemy import and_
 from qdb import Post, Schedule, Time, Watch, init_database, sessionmaker
 
 # Constants
+START = datetime.today()
 TOKENS_FILE = "tokens.json"
 
 # SQLAlchemy + SQLite
@@ -302,13 +303,18 @@ def process_queue():
     if not todaysched:
         print("No schedules today")
 
-    # Look for an hour that fits
+    # Look for an hour that fits, less than current hour, bigger that the
+    # application start datetime
     for tsc in todaysched:
+
+        starthour = START.hour if START.date() == today.date() else 0
+        startminute = START.minute if START.date() == today.date() else 0
 
         hour = DB.query(Time).filter(
             and_(Time.schedule_id == tsc.id, Time.used < today.date(),
                  Time.hour + Time.minute / 100 <=
-                 today.hour + today.minute / 100)).first()
+                 today.hour + today.minute / 100, Time.hour + Time.minute / 100
+                 >= starthour + startminute / 100)).first()
 
         print(f"\nSchedule '{tsc.name}'")
 
@@ -526,8 +532,7 @@ if __name__ == "__main__":
 
             while REPEAT and WAIT < ARGS.repeat:
                 sys.stdout.write(
-                    f"\rWrite 'q' and press enter to quit ({ARGS.repeat - WAIT}s): "
-                )
+                    f"\r'q' and enter to quit ({ARGS.repeat - WAIT}s): ")
                 sys.stdout.flush()
 
                 WAIT += 1
@@ -539,4 +544,4 @@ if __name__ == "__main__":
                 print(f"\n\n#{COUNT}\n")
 
     print(f"\nAll done! ({round(time.time()-DELTA)}s)")
-    time.sleep(2)
+    time.sleep(1)
