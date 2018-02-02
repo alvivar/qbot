@@ -5,6 +5,8 @@
     Auto queue images and text from folder (file name as text)
     Auto queue text tweets from a simple file
 
+    Bug A tweet was tweeted at 20:06 when it should have 20:50
+
     An option to ignore the application start datetime validation
     Current timer should be saved on the config file?
 
