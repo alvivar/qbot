@@ -308,7 +308,10 @@ def process_queue():
     # application start time hour if we are on the same day
     for tsc in todaysched:
 
-        startime = START.time() if START.date() == today.date() else time_()
+        if START.date() == today.date():
+            startime = START.time().replace(second=0, microsecond=0)
+        else:
+            startime = time_()
 
         hour = DB.query(Time).filter(
             and_(Time.schedule_id == tsc.id, Time.used < today.date(),
