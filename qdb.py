@@ -6,6 +6,7 @@ import datetime
 import os
 import sys
 
+from sqlalchemy import Time as Time_
 from sqlalchemy import (Boolean, Column, DateTime, ForeignKey, Integer, String,
                         create_engine)
 from sqlalchemy.ext.declarative import declarative_base
@@ -43,8 +44,7 @@ class Time(BASE):
     __tablename__ = "time"
     id = Column(Integer, primary_key=True)
     schedule_id = Column(Integer, ForeignKey("schedule.id"))
-    hour = Column(Integer)
-    minute = Column(Integer)
+    time = Column(Time_, default=datetime.time(0, 0))
     used = Column(DateTime, default=datetime.datetime(1984, 9, 11))
     created = Column(DateTime, default=datetime.datetime.now)
     updated = Column(
@@ -64,6 +64,7 @@ class Post(BASE):
     text = Column(String)
     image_url = Column(String)
     published = Column(Boolean, default=False)
+    error = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.datetime.now)
     updated = Column(
         DateTime,
