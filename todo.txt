@@ -2,16 +2,13 @@
         TO DO
 
 
+    Tweets with errors should return to the json watched file to be fixed
+
     Auto queue images and text from folder (file name as text)
     Auto queue text tweets from a simple file
 
-    Bug A tweet was tweeted at 20:06 when it should have 20:50
-
-    An option to ignore the application start datetime validation
+    An option to ignore the application start datetime validation?
     Current timer should be saved on the config file?
-
-    Tweets with errors should return to the json watched file to be fixed
-    Database should reflect tweets with errors instead of just mark them as published
 
     Bug? Watching -w a file fails when the folder name contains .
     qbot.json missing structure should regenerate on demand, this the only requirement for other scripts is to add the messages dictionary
@@ -28,6 +25,9 @@
     Tokens should be inside the database?
     Implement logging instead of print (sexyness +1)
 
+    2018/02/15 10:11 pm
+    x Database should reflect tweets with errors instead of just mark them as published
+    x Bug A tweet was tweeted at 20:06 when it should have 20:50
 
     2018/02/01 12:01 am
     x Avoid tweeting before the application start datetime
