@@ -100,7 +100,7 @@ def update_schedule(name, days, hours):
     DB.query(Time).filter(Time.schedule_id == schedule.id).delete()
     for h_m in hours:
         hour = Time()
-        hour.time = time_(h_m[0], h_m[1])
+        hour.time = time_(int(h_m[0]), int(h_m[1]))
         hour.schedule_id = schedule.id
         DB.add(hour)
 
