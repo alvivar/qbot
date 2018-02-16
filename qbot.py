@@ -6,7 +6,7 @@ import os
 import sys
 import threading
 import time
-from datetime import datetime
+from datetime import datetime, time as time_
 
 import tweepy
 from sqlalchemy import and_
@@ -100,8 +100,7 @@ def update_schedule(name, days, hours):
     DB.query(Time).filter(Time.schedule_id == schedule.id).delete()
     for h_m in hours:
         hour = Time()
-        hour.hour = h_m[0]
-        hour.minute = h_m[1]
+        hour.time = time_(h_m[0], h_m[1])
         hour.schedule_id = schedule.id
         DB.add(hour)
 
@@ -293,8 +292,10 @@ def process_queue():
     today = datetime.today()
 
     strday = str(get_schedule_column(today.weekday())).replace("Schedule.", "")
-    print(f"\nQueue processing started "
-          f"({strday.title()} {today.date()} {today.hour}:{today.minute:02})")
+    print(
+        f"\nQueue processing started "
+        f"({strday.title()} {today.date()} {today.time().replace(microsecond=0)})"
+    )
 
     # Get all the schedules for today
     todaysched = DB.query(Schedule).filter(
@@ -304,27 +305,26 @@ def process_queue():
         print("No schedules today")
 
     # Look for an hour that fits, less than current hour, bigger that the
-    # application start datetime hour
+    # application start time hour if we are on the same day
     for tsc in todaysched:
 
-        starthour = START.hour if START.date() == today.date() else 0
+        startime = START.time() if START.date() == today.date() else time_()
 
         hour = DB.query(Time).filter(
             and_(Time.schedule_id == tsc.id, Time.used < today.date(),
-                 Time.hour + Time.minute / 100 <=
-                 today.hour + today.minute / 100,
-                 Time.hour + Time.minute / 100 >= starthour)).first()
+                 Time.time <= today.time(), Time.time >= startime)).first()
 
         print(f"\nSchedule '{tsc.name}'")
 
         if hour:
 
-            print(f"At {hour.hour}:{hour.minute:02}")
+            print(f"At {hour.time}")
 
-            # Get the first unpublished post of the schedule in the hour
+            # Get the first unpublished post of the schedule in the hour that
+            # isn't an error
             post = DB.query(Post).filter(
-                and_(Post.schedule_id == hour.schedule_id,
-                     Post.published == 0)).first()
+                and_(Post.schedule_id == hour.schedule_id, Post.published == 0,
+                     Post.error == 0)).first()
 
             if post:
 
@@ -376,11 +376,9 @@ def process_queue():
                         DB.commit()
 
                     except tweepy.error.TweepError as err:
-                        img = post.image_url if post.image_url is not None else ""
                         print(f"Skipped, error: {err}")
 
-                        # TODO Mark the post as error instead of published
-                        post.published = True
+                        post.error = True
                         DB.add(post)
                         DB.commit()
 
@@ -543,4 +541,3 @@ if __name__ == "__main__":
                 print(f"\n\n#{COUNT}\n")
 
     print(f"\nAll done! ({round(time.time()-DELTA)}s)")
-    time.sleep(1)
