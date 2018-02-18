@@ -2,12 +2,12 @@
         TO DO
 
 
+    An option to ignore the application start datetime validation?
     Tweets with errors should return to the json watched file to be fixed
 
     Auto queue images and text from folder (file name as text)
     Auto queue text tweets from a simple file
 
-    An option to ignore the application start datetime validation?
     Current timer should be saved on the config file?
 
     Bug? Watching -w a file fails when the folder name contains .
