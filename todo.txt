@@ -2,6 +2,8 @@
         TO DO
 
 
+    Timers requires day validation
+
     An option to ignore the application start datetime validation?
     Tweets with errors should return to the json watched file to be fixed
 
