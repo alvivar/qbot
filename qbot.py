@@ -118,7 +118,7 @@ def update_timer(name, enabled, hours, minutes, seconds):
 
     # Get
     schedule = DB.query(Schedule).filter(Schedule.name == name).first()
-    timer = DB.query(Timer).filter(Timer.schedule_id == Schedule.id).first()
+    timer = DB.query(Timer).filter(Timer.schedule_id == schedule.id).first()
 
     # Or create
     if timer is None:
@@ -186,7 +186,7 @@ def watch_json(filename):
 
     jsonmessage = {
         "options": {
-            "refresh_schedule": True
+            "refresh_schedule": False
         },
         "schedule": {
             "name": "example",
@@ -272,13 +272,13 @@ def update_from_file(jsonfile):
         message['options']["refresh_schedule"] = False
         print(f"New schedule updated")
 
-    # Timer
-    timer_enabled = message['schedule']['timer']['enabled']
-    timer_hours = message['schedule']['timer']['hours']
-    timer_minutes = message['schedule']['timer']['minutes']
-    timer_seconds = message['schedule']['timer']['seconds']
-    update_timer(schedule, timer_enabled, timer_hours,
-                 timer_minutes, timer_seconds)
+        # Timer
+        timer_enabled = message['schedule']['timer']['enabled']
+        timer_hours = message['schedule']['timer']['hours']
+        timer_minutes = message['schedule']['timer']['minutes']
+        timer_seconds = message['schedule']['timer']['seconds']
+        update_timer(schedule, timer_enabled, timer_hours,
+                     timer_minutes, timer_seconds)
 
     # Posts
     for i, post in enumerate(message['messages']):
@@ -428,38 +428,37 @@ def process_queue():
             print(f"No pending hours!")
 
 
-def process_timers(timer_delta):
+def process_timers(timer_step):
     """
-        Tweet queued post based on the timers. One at a time.
+        Tweet queued post based on the timers.
     """
 
-    # # What day are we?
-    # today = datetime.today()
+    print(f"\nProcessing timers...")
 
-    # # Get all the schedules for today
-    # todaysched = DB.query(Schedule).filter(
-    #     get_schedule_column(today.weekday())).all()
+    # Get all the timers scheduled today
+    today = datetime.today()
+    schedule_timer = DB.query(Schedule, Timer)\
+        .filter(get_schedule_column(today.weekday()))\
+        .filter(Schedule.id == Timer.schedule_id)\
+        .filter(Timer.enabled == True)\
+        .all()
 
-    today_timers = DB.query(Timer).filter(
-        and_(today Timer.enabled == True)).all()
+    for schedule, timer in schedule_timer:
 
-    if not today_timers:
-        print("No timers on schedule")
-
-    for timer in today_timers:
+        print(f"\nSchedule '{schedule.name}'")
 
         countdown = timer.hours * 60 * 60 + timer.minutes * 60 + timer.seconds
 
-        timer.clocked += timer_delta
+        timer.clocked += timer_step
         DB.add(timer)
         DB.commit()
 
         if timer.clocked >= countdown:
 
-            print(f"Timer triggered!")
-
             schedule = DB.query(Schedule).filter(
                 Schedule.id == timer.schedule_id).first()
+
+            print(f"Timer triggered!")
 
             # First unpublished post of the schedule that isn't an error
             post = DB.query(Post).filter(
