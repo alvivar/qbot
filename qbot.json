@@ -1,9 +1,10 @@
 {
     "options": {
-        "refresh_schedule": true
+        "refresh_schedule": false
     },
     "schedule": {
         "name": "example",
+        "enabled": false,
         "days": [
             "monday",
             "tuesday",
@@ -14,6 +15,7 @@
             "sunday"
         ],
         "hours": [
+            "8:30",
             "10:30",
             "12:30",
             "14:30",
@@ -21,7 +23,13 @@
             "18:30",
             "20:30",
             "22:30"
-        ]
+        ],
+        "timer": {
+            "enabled": true,
+            "hours": 0,
+            "minutes": 0,
+            "seconds": 15
+        }
     },
     "twitter_tokens": {
         "consumer_key": "find",
@@ -29,7 +37,8 @@
         "oauth_token": "on",
         "oauth_secret": "apps.twitter.com"
     },
-    "messages": [
+    "messages": [],
+    "queued": [
         {
             "text": "only text message #example"
         },
