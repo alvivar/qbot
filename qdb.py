@@ -6,9 +6,10 @@ import datetime
 import os
 import sys
 
+from sqlalchemy import (Boolean, Column, DateTime, Float, ForeignKey, Integer,
+                        String)
 from sqlalchemy import Time as Time_
-from sqlalchemy import (Boolean, Column, DateTime, ForeignKey, Integer, String,
-                        create_engine)
+from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
@@ -19,6 +20,7 @@ class Schedule(BASE):
     """
         Holds the schedule of publication, days and hours.
     """
+
     __tablename__ = "schedule"
     id = Column(Integer, primary_key=True)
     times = relationship("Time")
@@ -31,32 +33,51 @@ class Schedule(BASE):
     saturday = Column(Boolean, default=False)
     sunday = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.datetime.now)
-    updated = Column(
-        DateTime,
-        onupdate=datetime.datetime.now,
-        default=datetime.datetime.now)
+    updated = Column(DateTime, onupdate=datetime.datetime.now,
+                     default=datetime.datetime.now)
 
 
 class Time(BASE):
     """
         Hours of publication in a Schedule.
     """
+
     __tablename__ = "time"
     id = Column(Integer, primary_key=True)
     schedule_id = Column(Integer, ForeignKey("schedule.id"))
+    enabled = Column(Boolean, default=True)
     time = Column(Time_, default=datetime.time(0, 0))
     used = Column(DateTime, default=datetime.datetime(1984, 9, 11))
     created = Column(DateTime, default=datetime.datetime.now)
-    updated = Column(
-        DateTime,
-        onupdate=datetime.datetime.now,
-        default=datetime.datetime.now)
+    updated = Column(DateTime,
+                     onupdate=datetime.datetime.now,
+                     default=datetime.datetime.now)
+
+
+class Timer(BASE):
+    """
+        Timer
+    """
+
+    __tablename__ = "timer"
+    id = Column(Integer, primary_key=True)
+    schedule_id = Column(Integer, ForeignKey("schedule.id"))
+    enabled = Column(Boolean, default=True)
+    hours = Column(Float, default=0)
+    minutes = Column(Float, default=0)
+    seconds = Column(Float, default=0)
+    clocked = Column(Float, default=0)
+    created = Column(DateTime, default=datetime.datetime.now)
+    updated = Column(DateTime,
+                     onupdate=datetime.datetime.now,
+                     default=datetime.datetime.now)
 
 
 class Post(BASE):
     """
         Posts to be published on Schedule time.
     """
+
     __tablename__ = "post"
     id = Column(Integer, primary_key=True)
     schedule_id = Column(Integer, ForeignKey("schedule.id"))
@@ -66,24 +87,23 @@ class Post(BASE):
     published = Column(Boolean, default=False)
     error = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.datetime.now)
-    updated = Column(
-        DateTime,
-        onupdate=datetime.datetime.now,
-        default=datetime.datetime.now)
+    updated = Column(DateTime,
+                     onupdate=datetime.datetime.now,
+                     default=datetime.datetime.now)
 
 
 class Watch(BASE):
     """
         Folder paths to watch for qbot.json file messages.
     """
+
     __tablename__ = "watch"
     id = Column(Integer, primary_key=True)
     path = Column(String)
     created = Column(DateTime, default=datetime.datetime.now)
-    updated = Column(
-        DateTime,
-        onupdate=datetime.datetime.now,
-        default=datetime.datetime.now)
+    updated = Column(DateTime,
+                     onupdate=datetime.datetime.now,
+                     default=datetime.datetime.now)
 
 
 def init_database():

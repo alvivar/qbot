@@ -6,12 +6,13 @@ import os
 import sys
 import threading
 import time
-from datetime import datetime, time as time_
+from datetime import datetime
+from datetime import time as time_
 
 import tweepy
 from sqlalchemy import and_
 
-from qdb import Post, Schedule, Time, Watch, init_database, sessionmaker
+from qdb import Post, Schedule, Time, Timer, Watch, init_database, sessionmaker
 
 # Constants
 START = datetime.today()
@@ -110,6 +111,35 @@ def update_schedule(name, days, hours):
     return schedule
 
 
+def update_timer(name, enabled, hours, minutes, seconds):
+    """
+        Create or update and return a timer.
+    """
+
+    # Get
+    schedule = DB.query(Schedule).filter(Schedule.name == name).first()
+    timer = DB.query(Timer).filter(Timer.schedule_id == Schedule.id).first()
+
+    # Or create
+    if timer is None:
+        timer = Timer()
+        timer.schedule_id = schedule.id
+        DB.add(timer)
+        DB.flush()
+
+    # Update
+    timer.enabled = enabled
+    timer.hours = hours
+    timer.minutes = minutes
+    timer.seconds = seconds
+
+    # Save
+    DB.commit()
+    DB.add(timer)
+
+    return timer
+
+
 def queue_post(schedule_name, text, image_url=None):
     """
         Create a post, return it. If the schedule doesn't exist, create it.
@@ -159,14 +189,16 @@ def watch_json(filename):
             "refresh_schedule": True
         },
         "schedule": {
-            "name":
-            "example",
-            "days": [
-                "monday", "tuesday", "wednesday", "thursday", "friday",
-                "saturday", "sunday"
-            ],
-            "hours":
-            ["10:30", "12:30", "14:30", "16:30", "18:30", "20:30", "22:30"]
+            "name": "example",
+            "enabled": False,
+            "days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+            "hours": ["8:30", "10:30", "12:30", "14:30", "16:30", "18:30", "20:30", "22:30"],
+            "timer": {
+                "enabled": False,
+                "hours": 1,
+                "minutes": 0,
+                "seconds": 0
+            },
         },
         "twitter_tokens": {
             "consumer_key": "find",
@@ -240,6 +272,14 @@ def update_from_file(jsonfile):
         message['options']["refresh_schedule"] = False
         print(f"New schedule updated")
 
+    # Timer
+    timer_enabled = message['schedule']['timer']['enabled']
+    timer_hours = message['schedule']['timer']['hours']
+    timer_minutes = message['schedule']['timer']['minutes']
+    timer_seconds = message['schedule']['timer']['seconds']
+    update_timer(schedule, timer_enabled, timer_hours,
+                 timer_minutes, timer_seconds)
+
     # Posts
     for i, post in enumerate(message['messages']):
         text = post['text']
@@ -292,10 +332,8 @@ def process_queue():
     today = datetime.today()
 
     strday = str(get_schedule_column(today.weekday())).replace("Schedule.", "")
-    print(
-        f"\nQueue processing started "
-        f"({strday.title()} {today.date()} {today.time().replace(microsecond=0)})"
-    )
+    print(f"\nQueue processing started "
+          f"({strday.title()} {today.date()} {today.time().replace(microsecond=0)})")
 
     # Get all the schedules for today
     todaysched = DB.query(Schedule).filter(
@@ -331,30 +369,28 @@ def process_queue():
 
             if post:
 
-                # Announce
+                print(f"Trying to tweet:\n"
+                      f"{post.text} {post.image_url if post.image_url else ''}")
 
-                print(
-                    f"Trying to tweet:\n{post.text} {post.image_url if post.image_url else ''}"
-                )
-
-                # Twitter auth and tokens validation
+                # Twitter tokens
 
                 tokens = json.load(open(TOKENS_FILE, 'r'))
 
-                auth = tweepy.OAuthHandler(tokens[tsc.name]['consumer_key'],
-                                           tokens[tsc.name]['consumer_secret'])
-                auth.set_access_token(tokens[tsc.name]['oauth_token'],
-                                      tokens[tsc.name]['oauth_secret'])
-
                 if not tokens[tsc.name]['consumer_key']:
-                    print(
-                        f"The schedule '{tsc.name}' doesn't have the Twitter tokens, add them to the tokens file!"
-                    )
+                    print(f"The schedule '{tsc.name}' doesn't have the Twitter tokens, "
+                          f"add them to the tokens file!")
                     continue
 
-                # Tweet
-
                 else:
+
+                    # Tweet
+
+                    auth = tweepy.OAuthHandler(
+                        tokens[tsc.name]['consumer_key'],
+                        tokens[tsc.name]['consumer_secret'])
+                    auth.set_access_token(
+                        tokens[tsc.name]['oauth_token'],
+                        tokens[tsc.name]['oauth_secret'])
 
                     api = tweepy.API(
                         auth,
@@ -392,6 +428,105 @@ def process_queue():
             print(f"No pending hours!")
 
 
+def process_timers(timer_delta):
+    """
+        Tweet queued post based on the timers. One at a time.
+    """
+
+    # # What day are we?
+    # today = datetime.today()
+
+    # # Get all the schedules for today
+    # todaysched = DB.query(Schedule).filter(
+    #     get_schedule_column(today.weekday())).all()
+
+    today_timers = DB.query(Timer).filter(
+        and_(today Timer.enabled == True)).all()
+
+    if not today_timers:
+        print("No timers on schedule")
+
+    for timer in today_timers:
+
+        countdown = timer.hours * 60 * 60 + timer.minutes * 60 + timer.seconds
+
+        timer.clocked += timer_delta
+        DB.add(timer)
+        DB.commit()
+
+        if timer.clocked >= countdown:
+
+            print(f"Timer triggered!")
+
+            schedule = DB.query(Schedule).filter(
+                Schedule.id == timer.schedule_id).first()
+
+            # First unpublished post of the schedule that isn't an error
+            post = DB.query(Post).filter(
+                and_(Post.schedule_id == timer.schedule_id, Post.published == 0,
+                     Post.error == 0)).first()
+
+            if post:
+
+                print(f"Trying to tweet:\n"
+                      f"{post.text} {post.image_url if post.image_url else ''}")
+
+                # Twitter tokens
+
+                tokens = json.load(open(TOKENS_FILE, 'r'))
+
+                if not tokens[schedule.name]['consumer_key']:
+                    print(f"The schedule '{schedule.name}' doesn't have the Twitter tokens, "
+                          f"add them to the tokens file!")
+                    continue
+
+                else:
+
+                    # Tweet
+
+                    auth = tweepy.OAuthHandler(
+                        tokens[schedule.name]['consumer_key'],
+                        tokens[schedule.name]['consumer_secret'])
+                    auth.set_access_token(
+                        tokens[schedule.name]['oauth_token'],
+                        tokens[schedule.name]['oauth_secret'])
+
+                    api = tweepy.API(
+                        auth,
+                        wait_on_rate_limit=True,
+                        wait_on_rate_limit_notify=True)
+
+                    try:
+                        if post.image_url:
+                            api.update_with_media(post.image_url, post.text)
+                        else:
+                            api.update_status(post.text)
+                        print(f"Done!")
+
+                        # Mark the post as published, and reset the timer
+
+                        post.published = True
+                        DB.add(post)
+
+                        timer.clocked = 0
+                        DB.add(timer)
+
+                        DB.commit()
+
+                    except tweepy.error.TweepError as err:
+                        print(f"Skipped, error: {err}")
+
+                        post.error = True
+                        DB.add(post)
+                        DB.commit()
+
+            else:
+                print("The queue is empty!")
+
+        else:
+            print(f"No pending timers!")
+
+
 def prune_watch_list():
     """
         Delete orphan files from the watch list.
@@ -418,20 +553,17 @@ if __name__ == "__main__":
     # Command line args
 
     PARSER = argparse.ArgumentParser(
-        description=
-        'Bot that tweets on schedules, using json files as configuration')
+        description='Bot that tweets on schedules, using json files as configuration')
     PARSER.add_argument(
         "-w",
         "--watch-json",
-        help=
-        "create or add to the watch list a json file to be used as configuration and data input for a schedule",
+        help="create or add to the watch list a json file to be used as configuration and data input for a schedule",
         nargs="+",
         default=[])
     PARSER.add_argument(
         "-s",
         "--start-queue",
-        help=
-        "start the queue process, updates data from the files in the watch list, then tweets based on the schedules",
+        help="start the queue process, updates data from the files in the watch list, then tweets based on the schedules",
         action="store_true")
     PARSER.add_argument(
         "-p",
@@ -441,8 +573,7 @@ if __name__ == "__main__":
     PARSER.add_argument(
         "-r",
         "--repeat",
-        help=
-        "seconds to wait between queue processes, 300s default, use 0 or less to not repeat at all",
+        help="seconds to wait between queue processes, 300s default, use 0 or less to not repeat at all",
         default=300,
         type=int)
     ARGS = PARSER.parse_args()
@@ -464,7 +595,6 @@ if __name__ == "__main__":
     try:
         TOKENS = json.load(open(TOKENS_FILE, 'r'))
     except (IOError, ValueError):
-
         TOKENS = {
             'example': {
                 'consumer_key': "find",
@@ -525,6 +655,7 @@ if __name__ == "__main__":
         while REPEAT:
 
             process_queue()
+            process_timers(ARGS.repeat)
 
             REPEAT = False if ARGS.repeat <= 0 else REPEAT
             if REPEAT:
