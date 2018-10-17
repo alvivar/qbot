@@ -24,7 +24,10 @@ class Schedule(BASE):
     __tablename__ = "schedule"
     id = Column(Integer, primary_key=True)
     times = relationship("Time")
+    timers = relationship("Timer")
     name = Column(String)
+    hours_enabled = Column(Boolean, default=False)
+    timer_enabled = Column(Boolean, default=False)
     monday = Column(Boolean, default=False)
     tuesday = Column(Boolean, default=False)
     wednesday = Column(Boolean, default=False)
@@ -45,7 +48,6 @@ class Time(BASE):
     __tablename__ = "time"
     id = Column(Integer, primary_key=True)
     schedule_id = Column(Integer, ForeignKey("schedule.id"))
-    enabled = Column(Boolean, default=True)
     time = Column(Time_, default=datetime.time(0, 0))
     used = Column(DateTime, default=datetime.datetime(1984, 9, 11))
     created = Column(DateTime, default=datetime.datetime.now)
@@ -62,7 +64,6 @@ class Timer(BASE):
     __tablename__ = "timer"
     id = Column(Integer, primary_key=True)
     schedule_id = Column(Integer, ForeignKey("schedule.id"))
-    enabled = Column(Boolean, default=True)
     hours = Column(Float, default=0)
     minutes = Column(Float, default=0)
     seconds = Column(Float, default=0)

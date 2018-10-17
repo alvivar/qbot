@@ -111,7 +111,7 @@ def update_schedule(name, days, hours):
     return schedule
 
 
-def update_timer(name, enabled, hours, minutes, seconds):
+def update_timer(name, hours, minutes, seconds):
     """
         Create or update and return a timer.
     """
@@ -128,7 +128,6 @@ def update_timer(name, enabled, hours, minutes, seconds):
         DB.flush()
 
     # Update
-    timer.enabled = enabled
     timer.hours = hours
     timer.minutes = minutes
     timer.seconds = seconds
@@ -140,7 +139,7 @@ def update_timer(name, enabled, hours, minutes, seconds):
     return timer
 
 
-def queue_post(schedule_name, text, image_url=None):
+def queue_post(schedule_name, text, image_url):
     """
         Create a post, return it. If the schedule doesn't exist, create it.
     """
@@ -159,7 +158,7 @@ def queue_post(schedule_name, text, image_url=None):
 
     # If repeated, rollback
     post = DB.query(Post).filter(
-        and_(Post.schedule_id == schedule.id, Post.text == text)).first()
+        and_(Post.schedule_id == schedule.id, Post.text == text, Post.image_url == image_url)).first()
 
     if post:
         DB.rollback()
@@ -268,24 +267,30 @@ def update_from_file(jsonfile):
     print(f"\nUpdating '{schedule}' from\n'{jsonfile}'")
 
     if message['options']["refresh_schedule"]:
+
+        # TODO Update this on the db
+        hours_enabled = message['options']['enable_hours']
+        timer_enabled = message['options']['enable_timer']
+
+        # Schedule
         update_schedule(schedule, days, hours)
         message['options']["refresh_schedule"] = False
-        print(f"New schedule updated")
 
         # Timer
-        timer_enabled = message['schedule']['timer']['enabled']
         timer_hours = message['schedule']['timer']['hours']
         timer_minutes = message['schedule']['timer']['minutes']
         timer_seconds = message['schedule']['timer']['seconds']
-        update_timer(schedule, timer_enabled, timer_hours,
-                     timer_minutes, timer_seconds)
+        update_timer(schedule, timer_hours, timer_minutes, timer_seconds)
+
+        print(f"New schedule & timers updated")
 
     # Posts
     for i, post in enumerate(message['messages']):
-        text = post['text']
-        image = post['image'] if "image" in post else None
+        text = post['text'] if 'text' in post else None
+        image = post['image'] if 'image' in post else None
         queue_post(schedule, text, image)
-        print(f"\n#{i+1} New post queued:\n{text} {image if image else ''}")
+        info = f"{text if text else ''} {image if image else ''}".strip()
+        print(f"\n#{i+1} New post queued:\n{info}")
 
     # Response is in the same file
 
@@ -322,7 +327,7 @@ def process_queue():
 
     # Update data from the watch list
 
-    print(f"Updating data from files in the watch list...")
+    print(f"Updating data from files in the watch list")
 
     watch = DB.query(Watch).all()
     for w in watch:
@@ -340,7 +345,7 @@ def process_queue():
         get_schedule_column(today.weekday())).all()
 
     if not todaysched:
-        print("No schedules today")
+        print("\nNo schedules today")
 
     # Look for an hour that fits, less than current hour, bigger that the
     # application start time hour if we are on the same day
@@ -369,8 +374,8 @@ def process_queue():
 
             if post:
 
-                print(f"Trying to tweet:\n"
-                      f"{post.text} {post.image_url if post.image_url else ''}")
+                info = f"{post.text if post.text else ''} {post.image_url if post.image_url else ''}".strip()
+                print(f"Trying to tweet:\n{info}")
 
                 # Twitter tokens
 
@@ -433,15 +438,20 @@ def process_timers(timer_step):
         Tweet queued post based on the timers.
     """
 
-    print(f"\nProcessing timers...")
+    # TODO Check this query below
 
     # Get all the timers scheduled today
     today = datetime.today()
     schedule_timer = DB.query(Schedule, Timer)\
         .filter(get_schedule_column(today.weekday()))\
+        .filter(Schedule.timer_enabled == True)\
         .filter(Schedule.id == Timer.schedule_id)\
-        .filter(Timer.enabled == True)\
         .all()
+
+    if schedule_timer:
+        print(f"\nProcessing timers")
+    else:
+        print(f"\nNo timers today")
 
     for schedule, timer in schedule_timer:
 
@@ -467,8 +477,8 @@ def process_timers(timer_step):
 
             if post:
 
-                print(f"Trying to tweet:\n"
-                      f"{post.text} {post.image_url if post.image_url else ''}")
+                info = f"{post.text if post.text else ''} {post.image_url if post.image_url else ''}".strip()
+                print(f"Trying to tweet:\n{info}")
 
                 # Twitter tokens
 
@@ -651,10 +661,11 @@ if __name__ == "__main__":
 
         WAIT = 0
         COUNT = 1
+        TIMER_STEP = 0
         while REPEAT:
 
             process_queue()
-            process_timers(ARGS.repeat)
+            process_timers(TIMER_STEP)
 
             REPEAT = False if ARGS.repeat <= 0 else REPEAT
             if REPEAT:
@@ -669,6 +680,7 @@ if __name__ == "__main__":
                 time.sleep(1)
 
             if REPEAT:
+                TIMER_STEP = WAIT
                 WAIT = 0
                 COUNT += 1
                 print(f"\n\n#{COUNT}\n")

@@ -2,7 +2,7 @@
         TO DO
 
 
-    Timers requires day validation
+    First timer queue should ignore the first time
 
     An option to ignore the application start datetime validation?
     Tweets with errors should return to the json watched file to be fixed
@@ -26,6 +26,12 @@
     Option to cascade delete a schedule
     Tokens should be inside the database?
     Implement logging instead of print (sexyness +1)
+
+
+    2018/10/16 02:21 pm
+    x It should be possible to tweet an image without text
+    x Timers requires day validation
+    x Timers!
 
     2018/02/15 10:11 pm
     x Database should reflect tweets with errors instead of just mark them as published
