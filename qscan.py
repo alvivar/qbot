@@ -1,10 +1,12 @@
 
+
 import calendar
 import json
 import os
 import re
 import sys
 import time
+from datetime import datetime, timedelta
 from random import randint, shuffle
 
 from qdb import Post, Schedule, Time, Timer, Watch, init_database, sessionmaker
@@ -993,13 +995,6 @@ if __name__ == '__main__':
             sys.executable if getattr(sys, 'frozen', False) else __file__))
     os.chdir(DIR)  # The current dir should be the script home
 
-    hours = [f"{hour:02}:{30:02}"
-             for hour in range(0, 24, 2)
-             for minute in range(0, 60, 60)]
-
-    print(hours)
-    sys.exit(0)
-
     TAGS = [
         '#gamedev',
         '#indiedev'
@@ -1042,6 +1037,32 @@ if __name__ == '__main__':
 
         DB.add(i)
     DB.commit()
+
+    # Better hour calculation
+
+    start_t = datetime(1984, 9, 11, 10, 0, 0)
+    end_t = datetime(1984, 9, 11, 18, 0, 0)
+    step_t = timedelta(hours=1, minutes=30)
+
+    hours = []
+    while start_t < end_t:
+        hours += [f"{start_t.hour:02}:{start_t.minute:02}"]
+        start_t += step_t
+    print(hours)
+
+    # hours = [f"{hour:02}:{30:02}"
+    #          for hour in range(10, 18, 1.5)
+    #          for minute in range(0, 60, 60)]
+
+    # hours = []
+    # hr = 10
+    # mn = 0
+    # hend = 18
+
+    # while h < hend:
+    #     hours += [f'{hr:02}:{mn:02}']
+    #     factor = 1.5 * 60
+    # hr = hr +
 
     # Randomize tagged-counted qbot file with the DATA
 
