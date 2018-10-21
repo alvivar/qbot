@@ -1,7 +1,7 @@
 
         TO DO
 
-
+    Test/fix when it's started using -r 0, it should 
     First timer queue should ignore the first time
 
     An option to ignore the application start datetime validation?
