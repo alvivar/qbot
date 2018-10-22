@@ -1001,8 +1001,8 @@ if __name__ == '__main__':
     ]
     TAGIX = 0
 
-    LPAD = ['(', '{', '[', '<', '|', ':', '*', '-']
-    RPAD = [')', '}', ']', '>', '|', ':', '*', '-']
+    LPAD = ['(', '{', '[', '<']
+    RPAD = [')', '}', ']', '>']
     PIX = randint(0, 256) % len(LPAD)
 
     # Rehashing DATA already on the database to fit a criteria
@@ -1016,7 +1016,7 @@ if __name__ == '__main__':
         .filter(Post.published == 0)\
         .filter(Post.error == 0).all()
 
-    OFFSET = 20
+    OFFSET = 29
     COUNT = OFFSET + 1
     for i in tweets:
 
