@@ -1,4 +1,9 @@
-""" Python Bot/library that queues tweets to post them later! """
+
+"""
+
+    Python Bot that queues tweets to post them later!
+
+"""
 
 import argparse
 import json
