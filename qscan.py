@@ -1,4 +1,10 @@
 
+"""
+
+    This app is supposed to scan folders and files to select and prepare batches
+    for QBot somehow. But rigth now is doing some cool hardcoded stuff.
+
+"""
 
 import calendar
 import json
