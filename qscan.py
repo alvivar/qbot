@@ -1013,48 +1013,48 @@ if __name__ == '__main__':
 
     # Rehashing DATA already on the database to fit a criteria
 
-    ENGINE = init_database()
-    SESSION = sessionmaker(bind=ENGINE)
-    DB = SESSION()
+    # ENGINE = init_database()
+    # SESSION = sessionmaker(bind=ENGINE)
+    # DB = SESSION()
 
-    tweets = DB.query(Post)\
-        .filter(Post.schedule_id == 6)\
-        .filter(Post.published == 0)\
-        .filter(Post.error == 0).all()
+    # tweets = DB.query(Post)\
+    #     .filter(Post.schedule_id == 6)\
+    #     .filter(Post.published == 0)\
+    #     .filter(Post.error == 0).all()
 
-    OFFSET = 29
-    COUNT = OFFSET + 1
-    for i in tweets:
+    # OFFSET = 29
+    # COUNT = OFFSET + 1
+    # for i in tweets:
 
-         # Date folder creation
-        year, month, day, *_ = time.gmtime(os.path.getmtime(i.image_url))
-        month = calendar.month_name[month]
-        date = re.sub(" +", " ", f"{month}, {year}").strip()
+    #      # Date folder creation
+    #     year, month, day, *_ = time.gmtime(os.path.getmtime(i.image_url))
+    #     month = calendar.month_name[month]
+    #     date = re.sub(" +", " ", f"{month}, {year}").strip()
 
-        image_name = os.path.basename(i.image_url)
-        count_info = f"{LPAD[PIX]}{COUNT} of {len(tweets)+OFFSET}{RPAD[PIX]}"
-        tags = TAGS[TAGIX]
-        i.text = f"{count_info} {image_name} {LPAD[PIX]}{date}{RPAD[PIX]} #gamedev #indiedev #matnesis"
-        print(f"{i.text}")
+    #     image_name = os.path.basename(i.image_url)
+    #     count_info = f"{LPAD[PIX]}{COUNT} of {len(tweets)+OFFSET}{RPAD[PIX]}"
+    #     tags = TAGS[TAGIX]
+    #     i.text = f"{count_info} {image_name} {LPAD[PIX]}{date}{RPAD[PIX]} #gamedev #indiedev #matnesis"
+    #     print(f"{i.text}")
 
-        COUNT += 1
-        PIX = (PIX + 1) % len(LPAD)
-        TAGIX = (TAGIX + 1) % len(TAGS)
+    #     COUNT += 1
+    #     PIX = (PIX + 1) % len(LPAD)
+    #     TAGIX = (TAGIX + 1) % len(TAGS)
 
-        DB.add(i)
-    DB.commit()
+    #     DB.add(i)
+    # DB.commit()
 
     # Better hour calculation
 
-    start_t = datetime(1984, 9, 11, 10, 0, 0)
-    end_t = datetime(1984, 9, 11, 18, 0, 0)
-    step_t = timedelta(hours=1, minutes=30)
+    # start_t = datetime(1984, 9, 11, 10, 0, 0)
+    # end_t = datetime(1984, 9, 11, 18, 0, 0)
+    # step_t = timedelta(hours=1, minutes=30)
 
-    hours = []
-    while start_t < end_t:
-        hours += [f"{start_t.hour:02}:{start_t.minute:02}"]
-        start_t += step_t
-    print(hours)
+    # hours = []
+    # while start_t < end_t:
+    #     hours += [f"{start_t.hour:02}:{start_t.minute:02}"]
+    #     start_t += step_t
+    # print(hours)
 
     # hours = [f"{hour:02}:{30:02}"
     #          for hour in range(10, 18, 1.5)
